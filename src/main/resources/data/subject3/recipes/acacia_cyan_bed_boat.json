@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:cyan_bed"
+    },
+    {
+      "item": "minecraft:acacia_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:acacia_cyan_bed_boat"
+  }
+}
