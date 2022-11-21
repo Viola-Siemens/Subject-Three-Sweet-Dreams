@@ -1,11 +1,13 @@
 package com.hexagram2021.subject3.common.entities;
 
 import com.hexagram2021.subject3.register.STEntities;
+import com.hexagram2021.subject3.register.STItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.GameRules;
@@ -23,8 +25,9 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 		super(type, level);
 	}
 
-	public BedMinecartEntity(World level, double x, double y, double z) {
+	public BedMinecartEntity(World level, double x, double y, double z, @Nonnull DyeColor color) {
 		super(STEntities.BED_MINECART.get(), level, x, y, z);
+		this.color = color;
 	}
 
 	@Override
@@ -38,6 +41,16 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 	@Override @Nonnull
 	public Type getMinecartType() {
 		return BED;
+	}
+
+	@Override
+	public ItemStack getCartItem() {
+		return new ItemStack(STItems.BedMinecarts.byColor(this.color));
+	}
+
+	@Override
+	public boolean canBeRidden() {
+		return true;
 	}
 
 	@Override
@@ -84,11 +97,15 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 				return Blocks.PURPLE_BED;
 			case RED:
 				return Blocks.RED_BED;
-			case YELLOW:
-				return Blocks.YELLOW_BED;
 			case WHITE:
 			default:
 				return Blocks.WHITE_BED;
+			case YELLOW:
+				return Blocks.YELLOW_BED;
 		}
+	}
+
+	public static BedMinecartEntity createBedMinecart(World level, double x, double y, double z, DyeColor color) {
+		return new BedMinecartEntity(level, x, y, z, color);
 	}
 }
