@@ -1,10 +1,16 @@
 package com.hexagram2021.subject3;
 
+import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STItems;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,16 +22,25 @@ public class Subject3 {
     public static final String MODID = "subject3";
 
     public Subject3() {
-
+        MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    public void serverStarted(FMLServerStartedEvent event) {
+        ServerWorld world = event.getServer().getLevel(World.OVERWORLD);
+        assert world != null;
+        if (!world.isClientSide) {
+            STSavedData worldData = world.getDataStorage().computeIfAbsent(STSavedData::new, STSavedData.SAVED_DATA_NAME);
+            STSavedData.setInstance(worldData);
+            STSavedData.markAllRelatedChunk(event.getServer());
+        }
+    }
+
     public static final ItemGroup ITEM_GROUP = new ItemGroup(MODID) {
-        @Override
-        @Nonnull
+        @Override @Nonnull
         public ItemStack makeIcon() {
-            return new ItemStack(STItems.BedBoats.OAK_BED_BOAT);
+            return new ItemStack(STItems.BedBoats.byTypeAndColor(BoatEntity.Type.OAK, DyeColor.RED));
         }
     };
 }

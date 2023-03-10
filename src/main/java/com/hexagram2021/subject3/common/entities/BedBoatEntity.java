@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class BedBoatEntity extends Entity {
+public class BedBoatEntity extends Entity implements IBedVehicle {
 	private static final DataParameter<Integer> DATA_ID_HURT = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
 	private static final DataParameter<Integer> DATA_ID_HURT_DIR = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
 	private static final DataParameter<Float> DATA_ID_DAMAGE = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.FLOAT);
@@ -75,6 +75,7 @@ public class BedBoatEntity extends Entity {
 	public BedBoatEntity(EntityType<?> entityType, World level) {
 		super(entityType, level);
 		this.blocksBuilding = true;
+		this.forcedLoading = true;
 	}
 
 	public BedBoatEntity(World level, double x, double y, double z) {
@@ -185,7 +186,11 @@ public class BedBoatEntity extends Entity {
 		} else if (entity.getBoundingBox().minY <= this.getBoundingBox().minY) {
 			super.push(entity);
 		}
+	}
 
+	@Nonnull
+	public Item getDropItem() {
+		return STItems.BedBoats.byTypeAndColor(this.getBoatType(), this.getBedColor());
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -787,11 +792,6 @@ public class BedBoatEntity extends Entity {
 		return DyeColor.byId(this.entityData.get(DATA_ID_DYE_COLOR));
 	}
 
-	@Nonnull
-	public Item getDropItem() {
-		return STItems.BedBoats.byTypeAndColor(this.getBoatType(), this.getBedColor());
-	}
-
 	@Override
 	protected boolean canAddPassenger(@Nonnull Entity entity) {
 		return this.getPassengers().size() < 1 && !this.isEyeInFluid(FluidTags.WATER);
@@ -821,7 +821,6 @@ public class BedBoatEntity extends Entity {
 		return this.status == BoatEntity.Status.UNDER_WATER || this.status == BoatEntity.Status.UNDER_FLOWING_WATER;
 	}
 
-	// Forge: Fix MC-119811 by instantly completing lerp on board
 	@Override
 	protected void addPassenger(@Nonnull Entity passenger) {
 		super.addPassenger(passenger);

@@ -2,8 +2,6 @@ package com.hexagram2021.subject3.common.entities;
 
 import com.hexagram2021.subject3.register.STEntities;
 import com.hexagram2021.subject3.register.STItems;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.DyeColor;
@@ -15,7 +13,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class BedMinecartEntity extends AbstractMinecartEntity {
+public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVehicle {
 	public static Type BED;
 
 	@Nonnull
@@ -23,6 +21,7 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 
 	public BedMinecartEntity(EntityType<?> type, World level) {
 		super(type, level);
+		this.forcedLoading = true;
 	}
 
 	public BedMinecartEntity(World level, double x, double y, double z, @Nonnull DyeColor color) {
@@ -34,7 +33,7 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 	public void destroy(@Nonnull DamageSource damageSource) {
 		super.destroy(damageSource);
 		if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-			this.spawnAtLocation(getBedBlock(this.color));
+			this.spawnAtLocation(IBedVehicle.getBedBlock(this.color));
 		}
 	}
 
@@ -64,44 +63,6 @@ public class BedMinecartEntity extends AbstractMinecartEntity {
 		super.readAdditionalSaveData(nbt);
 		if(nbt.contains("DyeColor")) {
 			this.color = DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE);
-		}
-	}
-
-	private static Block getBedBlock(DyeColor color) {
-		switch (color) {
-			case BLACK:
-				return Blocks.BLACK_BED;
-			case BLUE:
-				return Blocks.BLUE_BED;
-			case BROWN:
-				return Blocks.BROWN_BED;
-			case CYAN:
-				return Blocks.CYAN_BED;
-			case GRAY:
-				return Blocks.GRAY_BED;
-			case GREEN:
-				return Blocks.GREEN_BED;
-			case LIGHT_BLUE:
-				return Blocks.LIGHT_BLUE_BED;
-			case LIGHT_GRAY:
-				return Blocks.LIGHT_GRAY_BED;
-			case LIME:
-				return Blocks.LIME_BED;
-			case MAGENTA:
-				return Blocks.MAGENTA_BED;
-			case ORANGE:
-				return Blocks.ORANGE_BED;
-			case PINK:
-				return Blocks.PINK_BED;
-			case PURPLE:
-				return Blocks.PURPLE_BED;
-			case RED:
-				return Blocks.RED_BED;
-			case WHITE:
-			default:
-				return Blocks.WHITE_BED;
-			case YELLOW:
-				return Blocks.YELLOW_BED;
 		}
 	}
 
