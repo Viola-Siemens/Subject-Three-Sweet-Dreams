@@ -79,7 +79,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	public BedBoatEntity(World level, double x, double y, double z) {
-		this(STEntities.BED_MINECART.get(), level);
+		this(STEntities.BED_BOAT.get(), level);
 		this.setPos(x, y, z);
 		this.setDeltaMovement(Vector3d.ZERO);
 		this.xo = x;
