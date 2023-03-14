@@ -13,6 +13,7 @@ public class BedBoatModel extends SegmentedModel<BedBoatEntity> {
 	private final ModelRenderer[] paddles = new ModelRenderer[2];
 	private final ModelRenderer waterPatch;
 	private final ImmutableList<ModelRenderer> parts;
+	public final ModelRenderer bottom;
 
 	public BedBoatModel() {
 		ModelRenderer[] modelRenderers = new ModelRenderer[]{
@@ -51,6 +52,7 @@ public class BedBoatModel extends SegmentedModel<BedBoatEntity> {
 		builder.addAll(Arrays.asList(modelRenderers));
 		builder.addAll(Arrays.asList(this.paddles));
 		this.parts = builder.build();
+		this.bottom = modelRenderers[0];
 	}
 
 	@Override

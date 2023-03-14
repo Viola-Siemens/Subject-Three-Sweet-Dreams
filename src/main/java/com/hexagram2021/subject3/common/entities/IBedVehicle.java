@@ -42,4 +42,6 @@ public interface IBedVehicle {
 				return (BedBlock) Blocks.YELLOW_BED;
 		}
 	}
+
+	int passengersCount();
 }

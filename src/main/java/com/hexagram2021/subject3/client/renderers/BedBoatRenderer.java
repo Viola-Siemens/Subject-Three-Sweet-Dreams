@@ -1,5 +1,6 @@
 package com.hexagram2021.subject3.client.renderers;
 
+import com.hexagram2021.subject3.client.layers.BoatBedLayer;
 import com.hexagram2021.subject3.client.models.BedBoatModel;
 import com.hexagram2021.subject3.common.entities.BedBoatEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -9,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -18,12 +20,22 @@ import net.minecraft.util.math.vector.Vector3f;
 import javax.annotation.Nonnull;
 
 public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements IEntityRenderer<BedBoatEntity, BedBoatModel> {
-	private static final ResourceLocation[] BOAT_TEXTURE_LOCATIONS = new ResourceLocation[]{new ResourceLocation("textures/entity/boat/oak.png"), new ResourceLocation("textures/entity/boat/spruce.png"), new ResourceLocation("textures/entity/boat/birch.png"), new ResourceLocation("textures/entity/boat/jungle.png"), new ResourceLocation("textures/entity/boat/acacia.png"), new ResourceLocation("textures/entity/boat/dark_oak.png")};
+	private final LayerRenderer<BedBoatEntity, BedBoatModel> bedLayer;
+
+	private static final ResourceLocation[] BOAT_TEXTURE_LOCATIONS = new ResourceLocation[]{
+			new ResourceLocation("textures/entity/boat/oak.png"),
+			new ResourceLocation("textures/entity/boat/spruce.png"),
+			new ResourceLocation("textures/entity/boat/birch.png"),
+			new ResourceLocation("textures/entity/boat/jungle.png"),
+			new ResourceLocation("textures/entity/boat/acacia.png"),
+			new ResourceLocation("textures/entity/boat/dark_oak.png")
+	};
 	protected final BedBoatModel model = new BedBoatModel();
 
 	public BedBoatRenderer(EntityRendererManager manager) {
 		super(manager);
 		this.shadowRadius = 0.8F;
+		this.bedLayer = new BoatBedLayer(this);
 	}
 
 	@Override
@@ -55,6 +67,8 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements IE
 			IVertexBuilder builder = buffer.getBuffer(RenderType.waterMask());
 			this.model.waterPatch().render(transform, builder, h, OverlayTexture.NO_OVERLAY);
 		}
+
+		this.bedLayer.render(transform, buffer, h, bedBoatEntity, 0.0F, 0.0F, ticks, 0.0F, 0.0F, MathHelper.lerp(ticks, bedBoatEntity.xRotO, bedBoatEntity.xRot));
 
 		transform.popPose();
 		super.render(bedBoatEntity, y, ticks, transform, buffer, h);

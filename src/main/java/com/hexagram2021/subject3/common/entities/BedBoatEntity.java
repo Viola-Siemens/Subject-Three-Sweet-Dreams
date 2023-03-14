@@ -829,4 +829,9 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			this.absMoveTo(this.lerpX, this.lerpY, this.lerpZ, (float)this.lerpYRot, (float)this.lerpXRot);
 		}
 	}
+
+	@Override
+	public int passengersCount() {
+		return this.getPassengers().size();
+	}
 }

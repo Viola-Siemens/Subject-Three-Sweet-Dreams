@@ -1,7 +1,9 @@
 package com.hexagram2021.subject3.common.entities;
 
+import com.hexagram2021.subject3.register.STBlocks;
 import com.hexagram2021.subject3.register.STEntities;
 import com.hexagram2021.subject3.register.STItems;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.DyeColor;
@@ -64,6 +66,16 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 		if(nbt.contains("DyeColor")) {
 			this.color = DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE);
 		}
+	}
+
+	@Override @Nonnull
+	public BlockState getDefaultDisplayBlockState() {
+		return STBlocks.Technical.getMinecartBedBlockState(this.color);
+	}
+
+	@Override
+	public int passengersCount() {
+		return this.getPassengers().size();
 	}
 
 	public static BedMinecartEntity createBedMinecart(World level, double x, double y, double z, DyeColor color) {

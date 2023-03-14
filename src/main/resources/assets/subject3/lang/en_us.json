@@ -1,0 +1,7 @@
+{
+  "language": "English",
+  "language.code": "en_us",
+  "language.region": "United States",
+
+  "message.subject3.bed_vehicle_occupied": "You have no home bed minecart or bed boat, or it is occupied by another living entity."
+}
