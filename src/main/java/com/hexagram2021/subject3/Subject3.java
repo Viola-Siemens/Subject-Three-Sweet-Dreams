@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 
 @Mod(Subject3.MODID)
 public class Subject3 {
-	private static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogManager.getLogger();
 	public static final String MODID = "subject3";
 
 	public Subject3() {

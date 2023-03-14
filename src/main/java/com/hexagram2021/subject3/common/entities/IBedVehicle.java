@@ -44,4 +44,7 @@ public interface IBedVehicle {
 	}
 
 	int passengersCount();
+
+	@SuppressWarnings("unused")
+	void remove(boolean keepData);
 }

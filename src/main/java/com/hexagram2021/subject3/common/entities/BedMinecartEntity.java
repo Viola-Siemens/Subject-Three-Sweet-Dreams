@@ -1,5 +1,7 @@
 package com.hexagram2021.subject3.common.entities;
 
+import com.hexagram2021.subject3.common.STEventHandler;
+import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STBlocks;
 import com.hexagram2021.subject3.register.STEntities;
 import com.hexagram2021.subject3.register.STItems;
@@ -9,9 +11,13 @@ import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 
@@ -71,6 +77,20 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	@Override @Nonnull
 	public BlockState getDefaultDisplayBlockState() {
 		return STBlocks.Technical.getMinecartBedBlockState(this.color);
+	}
+
+	@Override @Nonnull
+	public IPacket<?> getAddEntityPacket() {
+		return NetworkHooks.getEntitySpawningPacket(this);
+	}
+
+	@Override
+	public void remove(boolean keepData) {
+		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
+		if(chunkPos != null && this.level instanceof ServerWorld && !STEventHandler.isChunkForced((ServerWorld)this.level, chunkPos)) {
+			this.level.getChunkSource().updateChunkForced(chunkPos, false);
+		}
+		super.remove(keepData);
 	}
 
 	@Override
