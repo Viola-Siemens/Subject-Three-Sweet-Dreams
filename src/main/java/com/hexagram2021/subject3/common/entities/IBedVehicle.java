@@ -1,8 +1,12 @@
 package com.hexagram2021.subject3.common.entities;
 
+import com.hexagram2021.subject3.common.STEventHandler;
+import com.hexagram2021.subject3.common.STSavedData;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.DyeColor;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.server.ServerWorld;
 
 public interface IBedVehicle {
 	static BedBlock getBedBlock(DyeColor color) {
@@ -45,6 +49,5 @@ public interface IBedVehicle {
 
 	int passengersCount();
 
-	@SuppressWarnings("unused")
-	void remove(boolean keepData);
+	void removeBedVehicle();
 }

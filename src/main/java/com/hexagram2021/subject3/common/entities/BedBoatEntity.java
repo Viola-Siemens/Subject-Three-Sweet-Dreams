@@ -158,7 +158,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 					this.spawnAtLocation(this.getDropItem());
 				}
 
-				this.remove();
+				this.removeBedVehicle();
 			}
 		}
 		return true;
@@ -718,7 +718,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 					this.causeFallDamage(this.fallDistance, 1.0F);
 					if (!this.level.isClientSide && !this.removed) {
-						this.remove();
+						this.removeBedVehicle();
 						if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 							for(int i = 0; i < 3; ++i) {
 								this.spawnAtLocation(this.getBoatType().getPlanks());
@@ -740,12 +740,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override
-	public void remove(boolean keepData) {
+	public void removeBedVehicle() {
 		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
 		if(chunkPos != null && this.level instanceof ServerWorld && !STEventHandler.isChunkForced((ServerWorld)this.level, chunkPos)) {
 			this.level.getChunkSource().updateChunkForced(chunkPos, false);
 		}
-		super.remove(keepData);
+		this.remove();
 	}
 
 	public boolean getPaddleState(int index) {

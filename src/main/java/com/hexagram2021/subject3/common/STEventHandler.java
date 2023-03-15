@@ -67,6 +67,7 @@ public class STEventHandler {
 						level.getChunkSource().updateChunkForced(oldPos, false);
 					}
 				} else {
+					Subject3.LOGGER.debug("A bed vehicle enter dimension " + level.dimension().location());
 					ChunkPos oldPos = STSavedData.removeBedVehicle(event.getEntity().getUUID());
 					if (oldPos != null && !isChunkForced(serverlevel, oldPos)) {
 						level.getChunkSource().updateChunkForced(oldPos, false);

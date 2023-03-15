@@ -51,34 +51,46 @@ public class STSavedData extends WorldSavedData {
 	@Override @Nonnull
 	public CompoundNBT save(CompoundNBT nbt) {
 		ListNBT allBedVehicles = new ListNBT();
-		this.bedVehicles.forEach((uuid, chunkPos) ->  {
-			CompoundNBT compound = new CompoundNBT();
-			compound.putLong(POSITION_KEY, chunkPos.toLong());
-			compound.putUUID(UUID_KEY, uuid);
+		synchronized (this.bedVehicles) {
+			this.bedVehicles.forEach((uuid, chunkPos) -> {
+				CompoundNBT compound = new CompoundNBT();
+				compound.putUUID(UUID_KEY, uuid);
+				compound.putLong(POSITION_KEY, chunkPos.toLong());
 
-			allBedVehicles.add(compound);
-		});
+				allBedVehicles.add(compound);
+			});
+		}
 		nbt.put(BED_VEHICLES_KEY, allBedVehicles);
 		return nbt;
 	}
 
 	public static void markAllRelatedChunk(MinecraftServer server) {
-		INSTANCE.bedVehicles.forEach(((uuid, chunkPos) -> {
-			ServerWorld level = server.overworld();
-			level.getChunkSource().updateChunkForced(chunkPos, true);
-		}));
+		synchronized (INSTANCE.bedVehicles) {
+			INSTANCE.bedVehicles.forEach(((uuid, chunkPos) -> {
+				ServerWorld level = server.overworld();
+				if (!STEventHandler.isChunkForced(level, chunkPos)) {
+					level.getChunkSource().updateChunkForced(chunkPos, true);
+				}
+			}));
+		}
 	}
 
 	@Nullable
 	public static ChunkPos addBedVehicle(UUID uuid, ChunkPos chunkPos) {
-		ChunkPos ret = INSTANCE.bedVehicles.put(uuid, chunkPos);
+		ChunkPos ret;
+		synchronized (INSTANCE.bedVehicles) {
+			ret = INSTANCE.bedVehicles.put(uuid, chunkPos);
+		}
 		INSTANCE.setDirty();
 		return ret;
 	}
 
 	@Nullable
 	public static ChunkPos removeBedVehicle(UUID uuid) {
-		ChunkPos ret = INSTANCE.bedVehicles.remove(uuid);
+		ChunkPos ret;
+		synchronized (INSTANCE.bedVehicles) {
+			ret = INSTANCE.bedVehicles.remove(uuid);
+		}
 		INSTANCE.setDirty();
 		return ret;
 	}
