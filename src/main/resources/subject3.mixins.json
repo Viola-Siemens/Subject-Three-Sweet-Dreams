@@ -5,11 +5,11 @@
   "refmap": "subject3.refmap.json",
   "minVersion": "0.8",
   "mixins": [
-    "LivingEntityMixin",
     "MinecartTypeMixin",
     "ServerPlayerEntityMixin"
   ],
   "client": [
-    "ClientPlayerEntityMixin"
+    "ClientPlayerEntityMixin",
+    "LivingRendererMixin"
   ]
 }

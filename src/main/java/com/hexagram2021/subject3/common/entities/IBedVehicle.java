@@ -50,4 +50,6 @@ public interface IBedVehicle {
 	int passengersCount();
 
 	void removeBedVehicle();
+
+	float getBedVehicleRotY();
 }

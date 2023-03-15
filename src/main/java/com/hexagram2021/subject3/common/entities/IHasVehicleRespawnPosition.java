@@ -7,8 +7,4 @@ public interface IHasVehicleRespawnPosition {
 	@Nullable
 	UUID getBedVehicleUUID();
 	void setBedVehicleUUID(@Nullable UUID uuid);
-
-	@Nullable
-	IBedVehicle getRidingBedVehicle();
-	void setRidingBedVehicleUUID(@Nullable IBedVehicle entity);
 }

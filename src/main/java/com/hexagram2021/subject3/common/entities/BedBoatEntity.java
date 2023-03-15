@@ -707,11 +707,9 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				}
 				ActionResultType ret;
 				if(player.startRiding(this)) {
-					this.setPose(Pose.SLEEPING);
 					ret = ActionResultType.CONSUME;
 					if(player instanceof IHasVehicleRespawnPosition) {
 						((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
-						((IHasVehicleRespawnPosition)player).setRidingBedVehicleUUID(this);
 					}
 				} else {
 					ret = ActionResultType.PASS;
@@ -764,6 +762,11 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			this.level.getChunkSource().updateChunkForced(chunkPos, false);
 		}
 		this.remove();
+	}
+
+	@Override
+	public float getBedVehicleRotY() {
+		return this.yRot;
 	}
 
 	public boolean getPaddleState(int index) {
@@ -864,5 +867,10 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	@Override
 	public int passengersCount() {
 		return this.getPassengers().size();
+	}
+
+	@Override
+	public boolean shouldRiderSit() {
+		return false;
 	}
 }

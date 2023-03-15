@@ -77,21 +77,25 @@ public class STSavedData extends WorldSavedData {
 
 	@Nullable
 	public static ChunkPos addBedVehicle(UUID uuid, ChunkPos chunkPos) {
-		ChunkPos ret;
-		synchronized (INSTANCE.bedVehicles) {
-			ret = INSTANCE.bedVehicles.put(uuid, chunkPos);
+		ChunkPos ret = null;
+		if(INSTANCE != null) {
+			synchronized (INSTANCE.bedVehicles) {
+				ret = INSTANCE.bedVehicles.put(uuid, chunkPos);
+			}
+			INSTANCE.setDirty();
 		}
-		INSTANCE.setDirty();
 		return ret;
 	}
 
 	@Nullable
 	public static ChunkPos removeBedVehicle(UUID uuid) {
-		ChunkPos ret;
-		synchronized (INSTANCE.bedVehicles) {
-			ret = INSTANCE.bedVehicles.remove(uuid);
+		ChunkPos ret = null;
+		if(INSTANCE != null) {
+			synchronized (INSTANCE.bedVehicles) {
+				ret = INSTANCE.bedVehicles.remove(uuid);
+			}
+			INSTANCE.setDirty();
 		}
-		INSTANCE.setDirty();
 		return ret;
 	}
 
