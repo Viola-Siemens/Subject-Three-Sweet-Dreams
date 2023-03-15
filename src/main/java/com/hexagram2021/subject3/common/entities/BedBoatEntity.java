@@ -4,6 +4,7 @@ import com.hexagram2021.subject3.common.STEventHandler;
 import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STEntities;
 import com.hexagram2021.subject3.register.STItems;
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.*;
@@ -31,6 +32,7 @@ import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -698,7 +700,21 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		}
 		if (this.outOfControlTicks < 60.0F) {
 			if (!this.level.isClientSide) {
-				return player.startRiding(this) ? ActionResultType.CONSUME : ActionResultType.PASS;
+				if (!BedBlock.canSetSpawn(this.level)) {
+					this.level.explode(this, DamageSource.badRespawnPointExplosion(), null, this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D, 5.0F, true, Explosion.Mode.DESTROY);
+					this.removeBedVehicle();
+					return ActionResultType.SUCCESS;
+				}
+				ActionResultType ret;
+				if(player.startRiding(this)) {
+					ret = ActionResultType.CONSUME;
+					if(player instanceof IHasVehicleRespawnPosition) {
+						((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+					}
+				} else {
+					ret = ActionResultType.PASS;
+				}
+				return ret;
 			}
 			return ActionResultType.SUCCESS;
 		}

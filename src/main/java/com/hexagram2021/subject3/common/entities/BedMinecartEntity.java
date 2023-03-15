@@ -5,6 +5,7 @@ import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STBlocks;
 import com.hexagram2021.subject3.register.STEntities;
 import com.hexagram2021.subject3.register.STItems;
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -14,8 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -37,6 +41,35 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	public BedMinecartEntity(World level, double x, double y, double z, @Nonnull DyeColor color) {
 		super(STEntities.BED_MINECART.get(), level, x, y, z);
 		this.color = color;
+	}
+
+	@Override @Nonnull
+	public ActionResultType interact(@Nonnull PlayerEntity player, @Nonnull Hand hand) {
+		ActionResultType ret = super.interact(player, hand);
+		if (ret.consumesAction()) return ret;
+		if (player.isSecondaryUseActive()) {
+			return ActionResultType.PASS;
+		}
+		if (this.isVehicle()) {
+			return ActionResultType.PASS;
+		}
+		if (!this.level.isClientSide) {
+			if (!BedBlock.canSetSpawn(this.level)) {
+				this.level.explode(this, DamageSource.badRespawnPointExplosion(), null, this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D, 5.0F, true, Explosion.Mode.DESTROY);
+				this.removeBedVehicle();
+				return ActionResultType.SUCCESS;
+			}
+			if(player.startRiding(this)) {
+				ret = ActionResultType.CONSUME;
+				if(player instanceof IHasVehicleRespawnPosition) {
+					((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+				}
+			} else {
+				ret = ActionResultType.PASS;
+			}
+			return ret;
+		}
+		return ActionResultType.SUCCESS;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -115,7 +148,6 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	public IPacket<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
-
 
 	@Override
 	public void removeBedVehicle() {

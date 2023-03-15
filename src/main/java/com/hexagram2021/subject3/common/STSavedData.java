@@ -65,9 +65,9 @@ public class STSavedData extends WorldSavedData {
 	}
 
 	public static void markAllRelatedChunk(MinecraftServer server) {
+		ServerWorld level = server.overworld();
 		synchronized (INSTANCE.bedVehicles) {
 			INSTANCE.bedVehicles.forEach(((uuid, chunkPos) -> {
-				ServerWorld level = server.overworld();
 				if (!STEventHandler.isChunkForced(level, chunkPos)) {
 					level.getChunkSource().updateChunkForced(chunkPos, true);
 				}

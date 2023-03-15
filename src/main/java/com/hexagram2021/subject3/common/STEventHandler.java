@@ -60,10 +60,11 @@ public class STEventHandler {
 
 					ChunkPos oldPos = STSavedData.addBedVehicle(event.getEntity().getUUID(), newPos);
 
-					if (!isChunkForced(serverlevel, newPos)) {
+					//Subject3.LOGGER.debug(String.format("Bed vehicle moves in overworld: (%d, %d) -> (%d, %d).", event.getOldChunkX(), event.getOldChunkZ(), event.getNewChunkX(), event.getNewChunkZ()));
+					if (!newPos.equals(oldPos) && !isChunkForced(serverlevel, newPos)) {
 						level.getChunkSource().updateChunkForced(newPos, true);
 					}
-					if (oldPos != null && !isChunkForced(serverlevel, oldPos)) {
+					if (oldPos != null && !oldPos.equals(newPos) && !isChunkForced(serverlevel, oldPos)) {
 						level.getChunkSource().updateChunkForced(oldPos, false);
 					}
 				} else {
