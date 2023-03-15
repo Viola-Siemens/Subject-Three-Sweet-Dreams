@@ -8,6 +8,7 @@ import com.hexagram2021.subject3.register.STItems;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
@@ -60,9 +61,11 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 				return ActionResultType.SUCCESS;
 			}
 			if(player.startRiding(this)) {
+				this.setPose(Pose.SLEEPING);
 				ret = ActionResultType.CONSUME;
 				if(player instanceof IHasVehicleRespawnPosition) {
 					((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+					((IHasVehicleRespawnPosition)player).setRidingBedVehicleUUID(this);
 				}
 			} else {
 				ret = ActionResultType.PASS;

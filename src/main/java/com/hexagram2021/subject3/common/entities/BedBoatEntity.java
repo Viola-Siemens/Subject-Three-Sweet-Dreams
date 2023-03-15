@@ -707,9 +707,11 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				}
 				ActionResultType ret;
 				if(player.startRiding(this)) {
+					this.setPose(Pose.SLEEPING);
 					ret = ActionResultType.CONSUME;
 					if(player instanceof IHasVehicleRespawnPosition) {
 						((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+						((IHasVehicleRespawnPosition)player).setRidingBedVehicleUUID(this);
 					}
 				} else {
 					ret = ActionResultType.PASS;

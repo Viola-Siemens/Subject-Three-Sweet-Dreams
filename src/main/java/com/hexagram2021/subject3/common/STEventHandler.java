@@ -29,13 +29,17 @@ public class STEventHandler {
 		PlayerEntity player = event.getPlayer();
 		if(player instanceof IHasVehicleRespawnPosition) {
 			UUID bedVehicleUUID = ((IHasVehicleRespawnPosition) player).getBedVehicleUUID();
-			Entity bedVehicle = ((ServerWorld) player.level).getEntity(bedVehicleUUID);
-			if(bedVehicle instanceof IBedVehicle) {
-				if(((IBedVehicle)bedVehicle).passengersCount() == 0) {
-					player.startRiding(bedVehicle);
+			if(bedVehicleUUID != null) {
+				Entity bedVehicle = ((ServerWorld) player.level).getEntity(bedVehicleUUID);
+				if (bedVehicle instanceof IBedVehicle) {
+					if (((IBedVehicle) bedVehicle).passengersCount() == 0) {
+						player.startRiding(bedVehicle);
+						return;
+					}
 				} else {
-					player.sendMessage(new TranslationTextComponent("message.subject3.bed_vehicle_occupied"), Util.NIL_UUID);
+					((IHasVehicleRespawnPosition) player).setBedVehicleUUID(null);
 				}
+				player.sendMessage(new TranslationTextComponent("message.subject3.bed_vehicle_occupied"), Util.NIL_UUID);
 			}
 		}
 	}
