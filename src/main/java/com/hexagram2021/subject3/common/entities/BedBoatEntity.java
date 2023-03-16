@@ -768,6 +768,10 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	public float getBedVehicleRotY() {
 		return this.yRot;
 	}
+	@Override
+	public double getBedVehicleOffsetY() {
+		return 1.25D;
+	}
 
 	public boolean getPaddleState(int index) {
 		return this.entityData.<Boolean>get(index == 0 ? DATA_ID_PADDLE_LEFT : DATA_ID_PADDLE_RIGHT) && this.getControllingPassenger() != null;

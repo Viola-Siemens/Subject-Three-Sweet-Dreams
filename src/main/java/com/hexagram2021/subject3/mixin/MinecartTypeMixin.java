@@ -17,6 +17,7 @@ public class MinecartTypeMixin {
 	@Final @Shadow @Mutable
 	private static AbstractMinecartEntity.Type[] $VALUES;
 
+	@SuppressWarnings("unused")
 	MinecartTypeMixin(String name, int ord) {
 		throw new UnsupportedOperationException("Replaced by Mixin");
 	}

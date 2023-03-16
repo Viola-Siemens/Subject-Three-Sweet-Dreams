@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings("unused")
 @Mixin(LivingRenderer.class)
 public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
 	@Redirect(method = "render(Lnet/minecraft/entity/LivingEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getPose()Lnet/minecraft/entity/Pose;"))
@@ -29,8 +30,9 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 	@Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/matrix/MatrixStack;translate(DDD)V", ordinal = 0, shift = At.Shift.AFTER))
 	public void st_renderLayHeightPosition(T entity, float y, float ticks, MatrixStack transform, @Nonnull IRenderTypeBuffer buffer, int h, CallbackInfo ci) {
 		if (entity.getVehicle() instanceof IBedVehicle) {
-			transform.translate(0.0D, 1.0D, 0.0D);
-			//TODO: minecart and boat are different
+			Direction direction = Direction.fromYRot(((IBedVehicle)entity.getVehicle()).getBedVehicleRotY()).getOpposite();
+			double movement = entity.getEyeHeight(Pose.STANDING) - 0.1D;
+			transform.translate(movement * direction.getStepX(), ((IBedVehicle)entity.getVehicle()).getBedVehicleOffsetY(), movement * direction.getStepZ());
 		}
 	}
 

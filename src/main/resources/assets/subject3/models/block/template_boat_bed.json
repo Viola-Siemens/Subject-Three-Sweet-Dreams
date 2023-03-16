@@ -1,0 +1,45 @@
+{
+    "parent": "minecraft:block/block",
+    "textures": {
+        "particle": "subject3:block/pillow",
+        "texture_pillow": "subject3:block/pillow"
+    },
+    "elements": [
+        {
+            "from": [ 0, 0, -6 ],
+            "to": [ 16, 8, 0 ],
+            "faces": {
+                "north": { "uv": [ 0, 0, 16,  8 ], "texture": "#texture_pillow", "cullface": "north" },
+                "east":  { "uv": [ 0, 8,  6, 16 ], "texture": "#texture_pillow", "cullface": "east"  },
+                "south": { "uv": [ 0, 0, 16,  8 ], "texture": "#texture_pillow", "cullface": "south" },
+                "west":  { "uv": [ 0, 8,  6, 16 ], "texture": "#texture_pillow", "cullface": "west"  },
+                "up":    { "uv": [ 0, 4, 16, 10 ], "texture": "#texture_pillow" },
+                "down":  { "uv": [ 0, 4, 16, 10 ], "texture": "#texture_pillow" }
+            }
+        },
+        {
+            "from": [0, 0, 0],
+            "to": [16, 6, 6],
+            "faces": {
+                "north": { "uv": [ 0,  0, 16,  6], "texture": "#texture_sheet", "cullface": "north" },
+                "east":  { "uv": [ 0, 10,  6, 16], "texture": "#texture_sheet", "cullface": "east"  },
+                "south": { "uv": [ 0,  0, 16,  6], "texture": "#texture_sheet", "cullface": "south" },
+                "west":  { "uv": [ 0, 10,  6, 16], "texture": "#texture_sheet", "cullface": "west"  },
+                "up":    { "uv": [ 0,  0, 16,  6], "texture": "#texture_sheet" },
+                "down":  { "uv": [ 0,  0, 16,  6], "texture": "#texture_sheet" }
+            }
+        },
+        {
+            "from": [0, 0, 6],
+            "to": [16, 7, 22],
+            "faces": {
+                "north": { "uv": [ 0, 0, 16,  6], "texture": "#texture_sheet", "cullface": "north" },
+                "east":  { "uv": [ 0, 9, 16, 16], "texture": "#texture_sheet", "cullface": "east"  },
+                "south": { "uv": [ 0, 0, 16,  6], "texture": "#texture_sheet", "cullface": "south" },
+                "west":  { "uv": [ 0, 9, 16, 16], "texture": "#texture_sheet", "cullface": "west"  },
+                "up":    { "uv": [ 0, 0, 16, 16], "texture": "#texture_sheet" },
+                "down":  { "uv": [ 0, 0, 16, 16], "texture": "#texture_sheet" }
+            }
+        }
+    ]
+}

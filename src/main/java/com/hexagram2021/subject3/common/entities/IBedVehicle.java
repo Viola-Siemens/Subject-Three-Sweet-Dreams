@@ -52,4 +52,5 @@ public interface IBedVehicle {
 	void removeBedVehicle();
 
 	float getBedVehicleRotY();
+	double getBedVehicleOffsetY();
 }

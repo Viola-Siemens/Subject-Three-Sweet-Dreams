@@ -162,6 +162,10 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	public float getBedVehicleRotY() {
 		return this.yRot + 90.0f;
 	}
+	@Override
+	public double getBedVehicleOffsetY() {
+		return 0.875D;
+	}
 
 	@Override
 	public int passengersCount() {

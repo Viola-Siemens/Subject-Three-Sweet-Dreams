@@ -1,0 +1,6 @@
+{
+  "parent": "subject3:block/template_boat_bed",
+  "textures": {
+    "texture_sheet": "subject3:block/black_sheet"
+  }
+}

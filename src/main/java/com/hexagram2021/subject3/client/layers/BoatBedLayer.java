@@ -33,7 +33,6 @@ public class BoatBedLayer extends LayerRenderer<BedBoatEntity, BedBoatModel> {
 		transform.pushPose();
 		ModelRenderer modelrenderer = model.bottom;
 		modelrenderer.translateAndRotate(transform);
-		transform.scale(2.0F, 2.0F, 2.0F);
 		transform.translate(-0.5D, -0.5D, -0.5D);
 		Minecraft.getInstance().getBlockRenderer().renderBlock(technicalBlock, transform, buffer, uv2, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
 		transform.popPose();
