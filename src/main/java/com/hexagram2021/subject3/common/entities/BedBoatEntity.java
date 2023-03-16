@@ -38,6 +38,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -685,10 +686,10 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@Override
 	protected void readAdditionalSaveData(CompoundNBT nbt) {
-		if (nbt.contains("Type", 8)) {
+		if (nbt.contains("Type", Constants.NBT.TAG_STRING)) {
 			this.setType(BoatEntity.Type.byName(nbt.getString("Type")));
 		}
-		if (nbt.contains("DyeColor", 8)) {
+		if (nbt.contains("DyeColor", Constants.NBT.TAG_STRING)) {
 			this.setColor(DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE));
 		}
 	}
@@ -770,7 +771,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 	@Override
 	public double getBedVehicleOffsetY() {
-		return 1.25D;
+		return 0.875D;
 	}
 
 	public boolean getPaddleState(int index) {

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -33,7 +34,9 @@ public class BoatBedLayer extends LayerRenderer<BedBoatEntity, BedBoatModel> {
 		transform.pushPose();
 		ModelRenderer modelrenderer = model.bottom;
 		modelrenderer.translateAndRotate(transform);
-		transform.translate(-0.5D, -0.5D, -0.5D);
+		transform.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
+		transform.mulPose(Vector3f.YP.rotationDegrees(90.0F));
+		transform.translate(-0.4375D, -0.5D, -0.5D);
 		Minecraft.getInstance().getBlockRenderer().renderBlock(technicalBlock, transform, buffer, uv2, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
 		transform.popPose();
 	}

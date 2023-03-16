@@ -31,8 +31,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 	public void st_renderLayHeightPosition(T entity, float y, float ticks, MatrixStack transform, @Nonnull IRenderTypeBuffer buffer, int h, CallbackInfo ci) {
 		if (entity.getVehicle() instanceof IBedVehicle) {
 			Direction direction = Direction.fromYRot(((IBedVehicle)entity.getVehicle()).getBedVehicleRotY()).getOpposite();
-			double movement = entity.getEyeHeight(Pose.STANDING) - 0.1D;
-			transform.translate(movement * direction.getStepX(), ((IBedVehicle)entity.getVehicle()).getBedVehicleOffsetY(), movement * direction.getStepZ());
+			double movement = entity.getEyeHeight(Pose.STANDING) - 0.1D - (entity.getBbHeight() / 2);
+			transform.translate(movement * direction.getStepX(), ((IBedVehicle)entity.getVehicle()).getBedVehicleOffsetY() - entity.getMyRidingOffset(), movement * direction.getStepZ());
 		}
 	}
 
