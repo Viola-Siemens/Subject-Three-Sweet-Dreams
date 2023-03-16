@@ -1,6 +1,6 @@
 {
   "parent": "subject3:block/template_boat_bed",
   "textures": {
-    "texture_sheet": "subject3:block/cyan_sheet"
+    "texture_sheet": "minecraft:block/cyan_wool"
   }
 }

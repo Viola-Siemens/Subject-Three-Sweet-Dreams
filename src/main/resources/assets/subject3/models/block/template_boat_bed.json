@@ -1,8 +1,8 @@
 {
     "parent": "minecraft:block/block",
     "textures": {
-        "particle": "subject3:block/pillow",
-        "texture_pillow": "subject3:block/pillow"
+        "particle": "minecraft:block/white_wool",
+        "texture_pillow": "minecraft:block/white_wool"
     },
     "elements": [
         {
