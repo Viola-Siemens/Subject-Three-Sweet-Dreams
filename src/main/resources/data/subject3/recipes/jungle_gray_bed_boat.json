@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:gray_bed"
+    },
+    {
+      "item": "minecraft:jungle_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:jungle_gray_bed_boat"
+  }
+}

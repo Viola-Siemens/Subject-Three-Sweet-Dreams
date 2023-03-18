@@ -74,6 +74,7 @@ public class STItems {
 	}
 
 
+	@SuppressWarnings("unused")
 	public static class ItemRegObject<T extends Item> implements Supplier<T>, IItemProvider {
 		private final RegistryObject<T> regObject;
 

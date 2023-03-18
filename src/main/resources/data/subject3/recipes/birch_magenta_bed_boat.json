@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:magenta_bed"
+    },
+    {
+      "item": "minecraft:birch_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:birch_magenta_bed_boat"
+  }
+}

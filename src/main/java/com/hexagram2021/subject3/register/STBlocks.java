@@ -145,6 +145,7 @@ public class STBlocks {
 		Technical.init();
 	}
 
+	@SuppressWarnings("unused")
 	public static final class BlockEntry<T extends Block> implements Supplier<T>, IItemProvider {
 		private final RegistryObject<T> regObject;
 		private final Supplier<AbstractBlock.Properties> properties;

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:brown_bed"
+    },
+    {
+      "item": "minecraft:dark_oak_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:dark_oak_brown_bed_boat"
+  }
+}

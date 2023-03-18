@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_minecart",
+  "ingredients": [
+    {
+      "item": "minecraft:pink_bed"
+    },
+    {
+      "item": "minecraft:minecart"
+    }
+  ],
+  "result": {
+    "item": "subject3:pink_bed_minecart"
+  }
+}

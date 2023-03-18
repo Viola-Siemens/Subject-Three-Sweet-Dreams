@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:gray_bed"
+    },
+    {
+      "item": "minecraft:mangrove_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:mangrove_gray_bed_boat"
+  }
+}
