@@ -41,9 +41,9 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 	@Redirect(method = "render(Lnet/minecraft/entity/LivingEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/model/EntityModel;setupAnim(Lnet/minecraft/entity/Entity;FFFFF)V"))
 	private <E extends Entity, EM extends EntityModel<E>> void st_disableAnimIfOnBedVehicles(EM instance, E entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		if(entity.getVehicle() instanceof IBedVehicle) {
-			instance.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+			instance.setupAnim(entity, 0.0F, 0.0F, ageInTicks, netHeadYaw, headPitch);
 		}
-		instance.setupAnim(entity, 0.0F, 0.0F, ageInTicks, netHeadYaw, headPitch);
+		instance.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 	}
 
 	@Redirect(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getPose()Lnet/minecraft/entity/Pose;"))
