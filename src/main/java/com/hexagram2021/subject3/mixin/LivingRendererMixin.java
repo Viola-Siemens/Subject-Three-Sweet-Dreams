@@ -42,8 +42,9 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 	private <E extends Entity, EM extends EntityModel<E>> void st_disableAnimIfOnBedVehicles(EM instance, E entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		if(entity.getVehicle() instanceof IBedVehicle) {
 			instance.setupAnim(entity, 0.0F, 0.0F, ageInTicks, netHeadYaw, headPitch);
+		} else {
+			instance.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 		}
-		instance.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 	}
 
 	@Redirect(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getPose()Lnet/minecraft/entity/Pose;"))
