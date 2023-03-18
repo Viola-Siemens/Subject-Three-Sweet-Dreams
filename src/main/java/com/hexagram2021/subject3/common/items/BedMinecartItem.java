@@ -7,7 +7,6 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.item.*;
 import net.minecraft.state.properties.RailShape;
 import net.minecraft.tags.BlockTags;
@@ -54,7 +53,8 @@ public class BedMinecartItem extends MinecartItem {
 				}
 			}
 
-			AbstractMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(level, x, y + addHeight, z, ((BedMinecartItem)itemStack.getItem()).color);
+			BedMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(level, x, y + addHeight, z);
+			minecartEntity.setColor(((BedMinecartItem)itemStack.getItem()).color);
 			if (itemStack.hasCustomHoverName()) {
 				minecartEntity.setCustomName(itemStack.getHoverName());
 			}
@@ -94,7 +94,8 @@ public class BedMinecartItem extends MinecartItem {
 					d0 = 0.5D;
 				}
 
-				AbstractMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D, this.color);
+				BedMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D);
+				minecartEntity.setColor(this.color);
 				if (itemstack.hasCustomHoverName()) {
 					minecartEntity.setCustomName(itemstack.getHoverName());
 				}

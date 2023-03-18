@@ -823,10 +823,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		return BoatEntity.Type.byId(this.entityData.get(DATA_ID_TYPE));
 	}
 
+	@Override
 	public void setColor(DyeColor color) {
 		this.entityData.set(DATA_ID_DYE_COLOR, color.ordinal());
 	}
 
+	@Override @Nonnull
 	public DyeColor getBedColor() {
 		return DyeColor.byId(this.entityData.get(DATA_ID_DYE_COLOR));
 	}

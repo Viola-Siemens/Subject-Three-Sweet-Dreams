@@ -35,6 +35,7 @@ public class ClientProxy {
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.RED_BOAT_BED.get(), RenderType.cutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.WHITE_BOAT_BED.get(), RenderType.cutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.YELLOW_BOAT_BED.get(), RenderType.cutout());
+
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.BLACK_MINECART_BED.get(), RenderType.cutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.BLUE_MINECART_BED.get(), RenderType.cutout());
 		RenderTypeLookup.setRenderLayer(STBlocks.Technical.BROWN_MINECART_BED.get(), RenderType.cutout());

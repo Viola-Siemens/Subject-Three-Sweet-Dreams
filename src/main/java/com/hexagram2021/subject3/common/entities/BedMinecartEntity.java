@@ -15,6 +15,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -23,6 +26,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -30,17 +34,21 @@ import javax.annotation.Nonnull;
 public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVehicle {
 	public static Type BED;
 
-	@Nonnull
-	private DyeColor color = DyeColor.WHITE;
+	private static final DataParameter<Integer> DATA_ID_DYE_COLOR = EntityDataManager.defineId(BedMinecartEntity.class, DataSerializers.INT);
 
 	public BedMinecartEntity(EntityType<?> type, World level) {
 		super(type, level);
 		this.forcedLoading = true;
 	}
 
-	public BedMinecartEntity(World level, double x, double y, double z, @Nonnull DyeColor color) {
+	public BedMinecartEntity(World level, double x, double y, double z) {
 		super(STEntities.BED_MINECART.get(), level, x, y, z);
-		this.color = color;
+	}
+
+	@Override
+	protected void defineSynchedData() {
+		super.defineSynchedData();
+		this.entityData.define(DATA_ID_DYE_COLOR, DyeColor.WHITE.ordinal());
 	}
 
 	@Override @Nonnull
@@ -106,7 +114,7 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 			}
 
 			this.spawnAtLocation(itemstack);
-			this.spawnAtLocation(IBedVehicle.getBedBlock(this.color));
+			this.spawnAtLocation(IBedVehicle.getBedBlock(this.getBedColor()));
 		}
 	}
 
@@ -117,7 +125,7 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 
 	@Override
 	public ItemStack getCartItem() {
-		return new ItemStack(STItems.BedMinecarts.byColor(this.color));
+		return new ItemStack(STItems.BedMinecarts.byColor(this.getBedColor()));
 	}
 
 	@Override
@@ -126,22 +134,32 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	}
 
 	@Override
+	public void setColor(DyeColor color) {
+		this.entityData.set(DATA_ID_DYE_COLOR, color.ordinal());
+	}
+
+	@Override @Nonnull
+	public DyeColor getBedColor() {
+		return DyeColor.byId(this.entityData.get(DATA_ID_DYE_COLOR));
+	}
+
+	@Override
 	protected void addAdditionalSaveData(@Nonnull CompoundNBT nbt) {
 		super.addAdditionalSaveData(nbt);
-		nbt.putString("DyeColor", this.color.getName());
+		nbt.putString("DyeColor", this.getBedColor().getName());
 	}
 
 	@Override
 	protected void readAdditionalSaveData(@Nonnull CompoundNBT nbt) {
 		super.readAdditionalSaveData(nbt);
-		if(nbt.contains("DyeColor")) {
-			this.color = DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE);
+		if (nbt.contains("DyeColor", Constants.NBT.TAG_STRING)) {
+			this.setColor(DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE));
 		}
 	}
 
 	@Override @Nonnull
 	public BlockState getDefaultDisplayBlockState() {
-		return STBlocks.Technical.getMinecartBedBlockState(this.color);
+		return STBlocks.Technical.getMinecartBedBlockState(this.getBedColor());
 	}
 
 	@Override @Nonnull
@@ -177,7 +195,7 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 		return false;
 	}
 
-	public static BedMinecartEntity createBedMinecart(World level, double x, double y, double z, DyeColor color) {
-		return new BedMinecartEntity(level, x, y, z, color);
+	public static BedMinecartEntity createBedMinecart(World level, double x, double y, double z) {
+		return new BedMinecartEntity(level, x, y, z);
 	}
 }

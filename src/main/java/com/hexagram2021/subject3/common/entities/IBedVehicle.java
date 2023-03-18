@@ -8,6 +8,8 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 
+import javax.annotation.Nonnull;
+
 public interface IBedVehicle {
 	static BedBlock getBedBlock(DyeColor color) {
 		switch (color) {
@@ -53,4 +55,8 @@ public interface IBedVehicle {
 
 	float getBedVehicleRotY();
 	double getBedVehicleOffsetY();
+
+	void setColor(DyeColor color);
+	@Nonnull
+	DyeColor getBedColor();
 }
