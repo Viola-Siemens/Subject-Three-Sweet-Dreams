@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[36,)"
-license="All rights reserved"
+license="GNU General Public License v3.0"
+issueTrackerURL="https://github.com/Viola-Siemens/Subject-Three-Sweet-Dreams/issues"
 
 [[mods]]
 modId="subject3"
