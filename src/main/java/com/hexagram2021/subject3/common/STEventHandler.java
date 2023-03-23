@@ -6,19 +6,16 @@ import com.hexagram2021.subject3.common.entities.IHasVehicleRespawnPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IWorldInfo;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static com.hexagram2021.subject3.Subject3.MODID;
 
@@ -65,35 +62,20 @@ public class STEventHandler {
 					ChunkPos oldPos = STSavedData.addBedVehicle(event.getEntity().getUUID(), newPos);
 
 					//Subject3.LOGGER.debug(String.format("Bed vehicle moves in overworld: (%d, %d) -> (%d, %d).", event.getOldChunkX(), event.getOldChunkZ(), event.getNewChunkX(), event.getNewChunkZ()));
-					if (!newPos.equals(oldPos) && !isChunkForced(serverlevel, newPos)) {
-						level.getChunkSource().updateChunkForced(newPos, true);
+					if (!newPos.equals(oldPos)) {
+						STSavedData.updateForceChunk(newPos, serverlevel, true);
 					}
-					if (oldPos != null && !oldPos.equals(newPos) && !isChunkForced(serverlevel, oldPos)) {
-						level.getChunkSource().updateChunkForced(oldPos, false);
+					if (oldPos != null && !oldPos.equals(newPos)) {
+						STSavedData.updateForceChunk(oldPos, serverlevel, false);
 					}
 				} else {
 					Subject3.LOGGER.debug("A bed vehicle enter dimension " + level.dimension().location());
 					ChunkPos oldPos = STSavedData.removeBedVehicle(event.getEntity().getUUID());
-					if (oldPos != null && !isChunkForced(serverlevel, oldPos)) {
-						level.getChunkSource().updateChunkForced(oldPos, false);
+					if (oldPos != null) {
+						STSavedData.updateForceChunk(oldPos, serverlevel, false);
 					}
 				}
 			}
 		}
-	}
-
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public static boolean isChunkForced(ServerWorld level, ChunkPos pos) {
-		IWorldInfo levelData = level.getLevelData();
-		ChunkPos spawnChunk = new ChunkPos(new BlockPos(levelData.getXSpawn(), 0, levelData.getZSpawn()));
-		Stream<ChunkPos> spawnChunks = ChunkPos.rangeClosed(spawnChunk, 9);
-
-		for (long values : level.getForcedChunks()) {
-			if (pos.equals(new ChunkPos(ChunkPos.getX(values), ChunkPos.getZ(values)))) {
-				return true;
-			}
-		}
-
-		return spawnChunks.anyMatch(chunk -> chunk.equals(pos));
 	}
 }

@@ -1,6 +1,5 @@
 package com.hexagram2021.subject3.common.entities;
 
-import com.hexagram2021.subject3.common.STEventHandler;
 import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STBlocks;
 import com.hexagram2021.subject3.register.STEntities;
@@ -170,8 +169,8 @@ public class BedMinecartEntity extends AbstractMinecartEntity implements IBedVeh
 	@Override
 	public void removeBedVehicle() {
 		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
-		if(chunkPos != null && this.level instanceof ServerWorld && !STEventHandler.isChunkForced((ServerWorld)this.level, chunkPos)) {
-			this.level.getChunkSource().updateChunkForced(chunkPos, false);
+		if(chunkPos != null && this.level instanceof ServerWorld) {
+			STSavedData.updateForceChunk(chunkPos, (ServerWorld)this.level, false);
 		}
 		this.remove();
 	}

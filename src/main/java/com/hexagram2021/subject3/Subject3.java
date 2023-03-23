@@ -45,7 +45,7 @@ public class Subject3 {
 		if (!world.isClientSide) {
 			STSavedData worldData = world.getDataStorage().computeIfAbsent(STSavedData::new, STSavedData.SAVED_DATA_NAME);
 			STSavedData.setInstance(worldData);
-			STSavedData.markAllRelatedChunk(event.getServer());
+			STSavedData.markAllRelatedChunks(event.getServer());
 		}
 	}
 

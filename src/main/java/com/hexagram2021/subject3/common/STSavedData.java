@@ -1,6 +1,6 @@
 package com.hexagram2021.subject3.common;
 
-import com.google.common.collect.Maps;
+import com.hexagram2021.subject3.common.utils.STBedVehicles;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -12,14 +12,13 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.UUID;
 
 public class STSavedData extends WorldSavedData {
 	private static STSavedData INSTANCE;
 	public static final String SAVED_DATA_NAME = "Subject3-SavedData";
 
-	private final Map<UUID, ChunkPos> bedVehicles = Maps.newHashMap();
+	private final STBedVehicles bedVehicles;
 
 	private static final String BED_VEHICLES_KEY = "BedVehicles";
 	private static final String POSITION_KEY = "position";
@@ -31,6 +30,7 @@ public class STSavedData extends WorldSavedData {
 
 	public STSavedData(String name) {
 		super(name);
+		this.bedVehicles = new STBedVehicles();
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class STSavedData extends WorldSavedData {
 
 			for(INBT entry: allBedVehicles) {
 				CompoundNBT compound = (CompoundNBT)entry;
-				this.bedVehicles.put(
+				this.bedVehicles.bedVehicles.put(
 						compound.getUUID(UUID_KEY),
 						new ChunkPos(compound.getLong(POSITION_KEY))
 				);
@@ -51,8 +51,8 @@ public class STSavedData extends WorldSavedData {
 	@Override @Nonnull
 	public CompoundNBT save(CompoundNBT nbt) {
 		ListNBT allBedVehicles = new ListNBT();
-		synchronized (this.bedVehicles) {
-			this.bedVehicles.forEach((uuid, chunkPos) -> {
+		synchronized (this.bedVehicles.bedVehicles) {
+			this.bedVehicles.bedVehicles.forEach((uuid, chunkPos) -> {
 				CompoundNBT compound = new CompoundNBT();
 				compound.putUUID(UUID_KEY, uuid);
 				compound.putLong(POSITION_KEY, chunkPos.toLong());
@@ -64,14 +64,10 @@ public class STSavedData extends WorldSavedData {
 		return nbt;
 	}
 
-	public static void markAllRelatedChunk(MinecraftServer server) {
-		ServerWorld level = server.overworld();
-		synchronized (INSTANCE.bedVehicles) {
-			INSTANCE.bedVehicles.forEach(((uuid, chunkPos) -> {
-				if (!STEventHandler.isChunkForced(level, chunkPos)) {
-					level.getChunkSource().updateChunkForced(chunkPos, true);
-				}
-			}));
+	public static void markAllRelatedChunks(MinecraftServer server) {
+		if(INSTANCE != null) {
+			ServerWorld level = server.overworld();
+			INSTANCE.bedVehicles.markAllRelatedChunks(level);
 		}
 	}
 
@@ -79,9 +75,7 @@ public class STSavedData extends WorldSavedData {
 	public static ChunkPos addBedVehicle(UUID uuid, ChunkPos chunkPos) {
 		ChunkPos ret = null;
 		if(INSTANCE != null) {
-			synchronized (INSTANCE.bedVehicles) {
-				ret = INSTANCE.bedVehicles.put(uuid, chunkPos);
-			}
+			ret = INSTANCE.bedVehicles.addVehicleWithoutUpdate(uuid, chunkPos);
 			INSTANCE.setDirty();
 		}
 		return ret;
@@ -91,12 +85,18 @@ public class STSavedData extends WorldSavedData {
 	public static ChunkPos removeBedVehicle(UUID uuid) {
 		ChunkPos ret = null;
 		if(INSTANCE != null) {
-			synchronized (INSTANCE.bedVehicles) {
-				ret = INSTANCE.bedVehicles.remove(uuid);
-			}
+			ret = INSTANCE.bedVehicles.removeBedVehicleWithoutUpdate(uuid);
 			INSTANCE.setDirty();
 		}
 		return ret;
+	}
+
+	public static void updateForceChunk(ChunkPos chunkPos, ServerWorld level, boolean force) {
+		if(force) {
+			INSTANCE.bedVehicles.updateForceChunkLoad(chunkPos, level);
+		} else {
+			INSTANCE.bedVehicles.updateUnforceChunkLoad(chunkPos, level);
+		}
 	}
 
 	public static void setInstance(STSavedData in) {
