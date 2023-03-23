@@ -92,10 +92,12 @@ public class STSavedData extends WorldSavedData {
 	}
 
 	public static void updateForceChunk(ChunkPos chunkPos, ServerWorld level, boolean force) {
-		if(force) {
-			INSTANCE.bedVehicles.updateForceChunkLoad(chunkPos, level);
-		} else {
-			INSTANCE.bedVehicles.updateUnforceChunkLoad(chunkPos, level);
+		if(INSTANCE != null) {
+			if (force) {
+				INSTANCE.bedVehicles.updateForceChunkLoad(chunkPos, level);
+			} else {
+				INSTANCE.bedVehicles.updateUnforceChunkLoad(chunkPos, level);
+			}
 		}
 	}
 
