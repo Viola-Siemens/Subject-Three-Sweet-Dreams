@@ -3,19 +3,24 @@ package com.hexagram2021.subject3.common;
 import com.hexagram2021.subject3.Subject3;
 import com.hexagram2021.subject3.common.entities.IBedVehicle;
 import com.hexagram2021.subject3.common.entities.IHasVehicleRespawnPosition;
+import net.minecraft.block.PortalInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static com.hexagram2021.subject3.Subject3.MODID;
 
@@ -30,6 +35,21 @@ public class STEventHandler {
 				Entity bedVehicle = ((ServerWorld) player.level).getEntity(bedVehicleUUID);
 				if (bedVehicle instanceof IBedVehicle) {
 					if (((IBedVehicle) bedVehicle).passengersCount() == 0) {
+						if(player.level == bedVehicle.level) {
+							player.setPos(bedVehicle.getX(), bedVehicle.getY(), bedVehicle.getZ());
+						} else {
+							player.changeDimension((ServerWorld) player.level, new ITeleporter() {
+								@Override
+								public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+									return repositionEntity.apply(false);
+								}
+
+								@Override
+								public PortalInfo getPortalInfo(Entity entity, ServerWorld destWorld, Function<ServerWorld, PortalInfo> defaultPortalInfo) {
+									return new PortalInfo(bedVehicle.position(), Vector3d.ZERO, entity.yRot, entity.xRot);
+								}
+							});
+						}
 						player.startRiding(bedVehicle);
 						return;
 					}
