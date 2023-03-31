@@ -3,10 +3,10 @@ package com.hexagram2021.subject3.common.utils;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.storage.LevelData;
 
 import java.util.Map;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class STBedVehicles {
 		this.loadedChunkTickets.defaultReturnValue(0);
 	}
 
-	public void markAllRelatedChunks(ServerWorld level) {
+	public void markAllRelatedChunks(ServerLevel level) {
 		synchronized (this.bedVehicles) {
 			synchronized (this.loadedChunkTickets) {
 				this.bedVehicles.forEach(((uuid, chunkPos) -> {
@@ -49,7 +49,7 @@ public class STBedVehicles {
 		}
 	}
 
-	public void updateForceChunkLoad(ChunkPos chunkPos, ServerWorld level) {
+	public void updateForceChunkLoad(ChunkPos chunkPos, ServerLevel level) {
 		if(!isChunkForced(level, chunkPos)) {
 			level.getChunkSource().updateChunkForced(chunkPos, true);
 			if(this.loadedChunkTickets.containsKey(chunkPos)) {
@@ -61,7 +61,7 @@ public class STBedVehicles {
 		}
 	}
 
-	public void updateUnforceChunkLoad(ChunkPos chunkPos, ServerWorld level) {
+	public void updateUnforceChunkLoad(ChunkPos chunkPos, ServerLevel level) {
 		if(!isChunkForced(level, chunkPos) && this.loadedChunkTickets.containsKey(chunkPos)) {
 			this.loadedChunkTickets.computeIntIfPresent(chunkPos, (cp, i) -> i - 1);
 			if(this.loadedChunkTickets.getInt(chunkPos) <= 0) {
@@ -72,8 +72,8 @@ public class STBedVehicles {
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public static boolean isChunkForced(ServerWorld level, ChunkPos pos) {
-		IWorldInfo levelData = level.getLevelData();
+	public static boolean isChunkForced(ServerLevel level, ChunkPos pos) {
+		LevelData levelData = level.getLevelData();
 		ChunkPos spawnChunk = new ChunkPos(new BlockPos(levelData.getXSpawn(), 0, levelData.getZSpawn()));
 		Stream<ChunkPos> spawnChunks = ChunkPos.rangeClosed(spawnChunk, 9);
 

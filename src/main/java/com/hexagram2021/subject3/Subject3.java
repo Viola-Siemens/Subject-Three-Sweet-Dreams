@@ -3,18 +3,18 @@ package com.hexagram2021.subject3;
 import com.hexagram2021.subject3.common.STContent;
 import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STItems;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,19 +40,19 @@ public class Subject3 {
 	}
 
 	public void serverStarted(FMLServerStartedEvent event) {
-		ServerWorld world = event.getServer().getLevel(World.OVERWORLD);
+		ServerLevel world = event.getServer().getLevel(Level.OVERWORLD);
 		assert world != null;
 		if (!world.isClientSide) {
-			STSavedData worldData = world.getDataStorage().computeIfAbsent(STSavedData::new, STSavedData.SAVED_DATA_NAME);
+			STSavedData worldData = world.getDataStorage().computeIfAbsent(STSavedData::new, STSavedData::new, STSavedData.SAVED_DATA_NAME);
 			STSavedData.setInstance(worldData);
 			STSavedData.markAllRelatedChunks(event.getServer());
 		}
 	}
 
-	public static final ItemGroup ITEM_GROUP = new ItemGroup(MODID) {
+	public static final CreativeModeTab ITEM_GROUP = new CreativeModeTab(MODID) {
 		@Override @Nonnull
 		public ItemStack makeIcon() {
-			return new ItemStack(STItems.BedBoats.byTypeAndColor(BoatEntity.Type.OAK, DyeColor.RED));
+			return new ItemStack(STItems.BedBoats.byTypeAndColor(Boat.Type.OAK, DyeColor.RED));
 		}
 	};
 }

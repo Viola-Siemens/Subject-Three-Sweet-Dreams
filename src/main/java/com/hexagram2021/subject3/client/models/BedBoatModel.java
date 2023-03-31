@@ -2,88 +2,88 @@ package com.hexagram2021.subject3.client.models;
 
 import com.google.common.collect.ImmutableList;
 import com.hexagram2021.subject3.common.entities.BedBoatEntity;
-import net.minecraft.client.renderer.entity.model.SegmentedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.ListModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 
-public class BedBoatModel extends SegmentedModel<BedBoatEntity> {
-	private final ModelRenderer[] paddles = new ModelRenderer[2];
-	private final ModelRenderer waterPatch;
-	private final ImmutableList<ModelRenderer> parts;
-	public final ModelRenderer bottom;
+public class BedBoatModel extends ListModel<BedBoatEntity> {
+	private final ModelPart leftPaddle;
+	private final ModelPart rightPaddle;
+	private final ModelPart waterPatch;
+	private final ImmutableList<ModelPart> parts;
+	public final ModelPart bottom;
 
-	public BedBoatModel() {
-		ModelRenderer[] modelRenderers = new ModelRenderer[]{
-				new ModelRenderer(this, 0, 0).setTexSize(128, 64),
-				new ModelRenderer(this, 0, 19).setTexSize(128, 64),
-				new ModelRenderer(this, 0, 27).setTexSize(128, 64),
-				new ModelRenderer(this, 0, 35).setTexSize(128, 64),
-				new ModelRenderer(this, 0, 43).setTexSize(128, 64)
-		};
-		modelRenderers[0].addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
-		modelRenderers[0].setPos(0.0F, 3.0F, 1.0F);
-		modelRenderers[1].addBox(-13.0F, -7.0F, -1.0F, 18.0F, 6.0F, 2.0F, 0.0F);
-		modelRenderers[1].setPos(-15.0F, 4.0F, 4.0F);
-		modelRenderers[2].addBox(-8.0F, -7.0F, -1.0F, 16.0F, 6.0F, 2.0F, 0.0F);
-		modelRenderers[2].setPos(15.0F, 4.0F, 0.0F);
-		modelRenderers[3].addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
-		modelRenderers[3].setPos(0.0F, 4.0F, -9.0F);
-		modelRenderers[4].addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
-		modelRenderers[4].setPos(0.0F, 4.0F, 9.0F);
-		modelRenderers[0].xRot = ((float)Math.PI / 2.0F);
-		modelRenderers[1].yRot = ((float)Math.PI * 1.5F);
-		modelRenderers[2].yRot = ((float)Math.PI / 2.0F);
-		modelRenderers[3].yRot = (float)Math.PI;
-		this.paddles[0] = this.makePaddle(true);
-		this.paddles[0].setPos(3.0F, -5.0F, 9.0F);
-		this.paddles[1] = this.makePaddle(false);
-		this.paddles[1].setPos(3.0F, -5.0F, -9.0F);
-		this.paddles[1].yRot = (float)Math.PI;
-		this.paddles[0].zRot = 0.19634955F;
-		this.paddles[1].zRot = 0.19634955F;
-		this.waterPatch = new ModelRenderer(this, 0, 0).setTexSize(128, 64);
-		this.waterPatch.addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
-		this.waterPatch.setPos(0.0F, -3.0F, 1.0F);
-		this.waterPatch.xRot = (float)Math.PI / 2.0F;
-		ImmutableList.Builder<ModelRenderer> builder = ImmutableList.builder();
-		builder.addAll(Arrays.asList(modelRenderers));
-		builder.addAll(Arrays.asList(this.paddles));
-		this.parts = builder.build();
-		this.bottom = modelRenderers[0];
+	public BedBoatModel(ModelPart root) {
+		this.leftPaddle = root.getChild("left_paddle");
+		this.rightPaddle = root.getChild("right_paddle");
+		this.waterPatch = root.getChild("water_patch");
+		this.bottom = root.getChild("bottom");
+
+		this.parts = ImmutableList.of(
+				this.bottom, root.getChild("back"), root.getChild("front"),
+				root.getChild("left"), root.getChild("right"),
+				this.leftPaddle, this.rightPaddle
+		);
+	}
+
+	public static LayerDefinition createBodyModel() {
+		MeshDefinition meshdefinition = new MeshDefinition();
+		PartDefinition root = meshdefinition.getRoot();
+		root.addOrReplaceChild("bottom",
+				CubeListBuilder.create().texOffs(0, 0).addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
+				PartPose.offsetAndRotation(0.0F, 3.0F, 1.0F, ((float)Math.PI / 2F), 0.0F, 0.0F));
+		root.addOrReplaceChild("back",
+				CubeListBuilder.create().texOffs(0, 19).addBox(-13.0F, -7.0F, -1.0F, 18.0F, 6.0F, 2.0F),
+				PartPose.offsetAndRotation(-15.0F, 4.0F, 4.0F, 0.0F, ((float)Math.PI * 1.5F), 0.0F));
+		root.addOrReplaceChild("front",
+				CubeListBuilder.create().texOffs(0, 27).addBox(-8.0F, -7.0F, -1.0F, 16.0F, 6.0F, 2.0F),
+				PartPose.offsetAndRotation(15.0F, 4.0F, 0.0F, 0.0F, ((float)Math.PI / 2F), 0.0F));
+		root.addOrReplaceChild("right",
+				CubeListBuilder.create().texOffs(0, 35).addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F),
+				PartPose.offsetAndRotation(0.0F, 4.0F, -9.0F, 0.0F, (float)Math.PI, 0.0F));
+		root.addOrReplaceChild("left",
+				CubeListBuilder.create().texOffs(0, 43).addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F),
+				PartPose.offset(0.0F, 4.0F, 9.0F));
+		root.addOrReplaceChild("left_paddle",
+				CubeListBuilder.create().texOffs(62, 0).addBox(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).addBox(-1.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
+				PartPose.offsetAndRotation(3.0F, -5.0F, 9.0F, 0.0F, 0.0F, 0.19634955F));
+		root.addOrReplaceChild("right_paddle",
+				CubeListBuilder.create().texOffs(62, 20).addBox(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).addBox(0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
+				PartPose.offsetAndRotation(3.0F, -5.0F, -9.0F, 0.0F, (float)Math.PI, 0.19634955F));
+		root.addOrReplaceChild("water_patch",
+				CubeListBuilder.create().texOffs(0, 0).addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
+				PartPose.offsetAndRotation(0.0F, -3.0F, 1.0F, ((float)Math.PI / 2F), 0.0F, 0.0F));
+		return LayerDefinition.create(meshdefinition, 128, 64);
 	}
 
 	@Override
 	public void setupAnim(@Nonnull BedBoatEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.animatePaddle(entity, 0, limbSwing);
-		this.animatePaddle(entity, 1, limbSwing);
+		animatePaddle(entity, 0, this.leftPaddle, limbSwing);
+		animatePaddle(entity, 1, this.rightPaddle, limbSwing);
 	}
 
 	@Override @Nonnull
-	public ImmutableList<ModelRenderer> parts() {
+	public Iterable<ModelPart> parts() {
 		return this.parts;
 	}
 
-	public ModelRenderer waterPatch() {
+	public ModelPart waterPatch() {
 		return this.waterPatch;
 	}
 
-	protected ModelRenderer makePaddle(boolean index) {
-		ModelRenderer modelrenderer = (new ModelRenderer(this, 62, index ? 0 : 20)).setTexSize(128, 64);
-		modelrenderer.addBox(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F);
-		modelrenderer.addBox(index ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
-		return modelrenderer;
-	}
-
-	protected void animatePaddle(BedBoatEntity bedBoatEntity, int index, float time) {
-		float f = bedBoatEntity.getRowingTime(index, time);
-		ModelRenderer modelrenderer = this.paddles[index];
-		modelrenderer.xRot = (float) MathHelper.clampedLerp(-Math.PI / 3.0D, -0.2617994D, (MathHelper.sin(-f) + 1.0D) / 2.0D);
-		modelrenderer.yRot = (float)MathHelper.clampedLerp(-Math.PI / 4.0D, Math.PI / 4.0D, (MathHelper.sin(-f + 1.0F) + 1.0D) / 2.0D);
+	private static void animatePaddle(BedBoatEntity boat, int index, ModelPart paddle, float limbSwing) {
+		float f = boat.getRowingTime(index, limbSwing);
+		paddle.xRot = Mth.clampedLerp((-(float)Math.PI / 3.0F), -0.2617994F, (Mth.sin(-f) + 1.0F) / 2.0F);
+		paddle.yRot = Mth.clampedLerp((-(float)Math.PI / 4.0F), ((float)Math.PI / 4.0F), (Mth.sin(-f + 1.0F) + 1.0F) / 2.0F);
 		if (index == 1) {
-			modelrenderer.yRot = (float)Math.PI - modelrenderer.yRot;
+			paddle.yRot = (float)Math.PI - paddle.yRot;
 		}
 	}
 }

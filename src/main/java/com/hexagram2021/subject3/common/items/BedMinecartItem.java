@@ -1,37 +1,41 @@
 package com.hexagram2021.subject3.common.items;
 
 import com.hexagram2021.subject3.common.entities.BedMinecartEntity;
-import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.dispenser.IDispenseItemBehavior;
-import net.minecraft.item.*;
-import net.minecraft.state.properties.RailShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MinecartItem;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.RailShape;
 
 import javax.annotation.Nonnull;
 
 public class BedMinecartItem extends MinecartItem {
-	private static final IDispenseItemBehavior DISPENSE_BED_MINECART_BEHAVIOR = new DefaultDispenseItemBehavior() {
+	private static final DispenseItemBehavior DISPENSE_BED_MINECART_BEHAVIOR = new DefaultDispenseItemBehavior() {
 		private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
 
 		@SuppressWarnings("deprecation")
 		@Override @Nonnull
-		public ItemStack execute(IBlockSource blockSource, @Nonnull ItemStack itemStack) {
+		public ItemStack execute(BlockSource blockSource, @Nonnull ItemStack itemStack) {
 			Direction direction = blockSource.getBlockState().getValue(DispenserBlock.FACING);
-			World level = blockSource.getLevel();
+			Level level = blockSource.getLevel();
 			double x = blockSource.x() + direction.getStepX() * 1.125D;
 			double y = Math.floor(blockSource.y()) + direction.getStepY();
 			double z = blockSource.z() + direction.getStepZ() * 1.125D;
 			BlockPos facingPos = blockSource.getPos().relative(direction);
 			BlockState facing = level.getBlockState(facingPos);
-			RailShape facingRailShape = facing.getBlock() instanceof AbstractRailBlock ? ((AbstractRailBlock)facing.getBlock()).getRailDirection(facing, level, facingPos, null) : RailShape.NORTH_SOUTH;
+			RailShape facingRailShape = facing.getBlock() instanceof BaseRailBlock railBlock ? railBlock.getRailDirection(facing, level, facingPos, null) : RailShape.NORTH_SOUTH;
 			double addHeight;
 			if (facing.is(BlockTags.RAILS)) {
 				if (facingRailShape.isAscending()) {
@@ -45,7 +49,7 @@ public class BedMinecartItem extends MinecartItem {
 				}
 
 				BlockState below = level.getBlockState(facingPos.below());
-				RailShape belowRailShape = below.getBlock() instanceof AbstractRailBlock ? below.getValue(((AbstractRailBlock)below.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
+				RailShape belowRailShape = below.getBlock() instanceof BaseRailBlock railBlock ? below.getValue(railBlock.getShapeProperty()) : RailShape.NORTH_SOUTH;
 				if (direction != Direction.DOWN && belowRailShape.isAscending()) {
 					addHeight = -0.4D;
 				} else {
@@ -65,7 +69,7 @@ public class BedMinecartItem extends MinecartItem {
 		}
 
 		@Override
-		protected void playSound(IBlockSource blockSource) {
+		protected void playSound(BlockSource blockSource) {
 			blockSource.getLevel().levelEvent(1000, blockSource.getPos(), 0);
 		}
 	};
@@ -79,32 +83,31 @@ public class BedMinecartItem extends MinecartItem {
 	}
 
 	@Override @Nonnull
-	public ActionResultType useOn(ItemUseContext context) {
-		World world = context.getLevel();
+	public InteractionResult useOn(UseOnContext context) {
+		Level world = context.getLevel();
 		BlockPos blockpos = context.getClickedPos();
 		BlockState blockstate = world.getBlockState(blockpos);
 		if (!blockstate.is(BlockTags.RAILS)) {
-			return ActionResultType.FAIL;
-		} else {
-			ItemStack itemstack = context.getItemInHand();
-			if (!world.isClientSide) {
-				RailShape railshape = blockstate.getBlock() instanceof AbstractRailBlock ? ((AbstractRailBlock)blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null) : RailShape.NORTH_SOUTH;
-				double d0 = 0.0D;
-				if (railshape.isAscending()) {
-					d0 = 0.5D;
-				}
-
-				BedMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D);
-				minecartEntity.setColor(this.color);
-				if (itemstack.hasCustomHoverName()) {
-					minecartEntity.setCustomName(itemstack.getHoverName());
-				}
-
-				world.addFreshEntity(minecartEntity);
+			return InteractionResult.FAIL;
+		}
+		ItemStack itemstack = context.getItemInHand();
+		if (!world.isClientSide) {
+			RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock railBlock ? railBlock.getRailDirection(blockstate, world, blockpos, null) : RailShape.NORTH_SOUTH;
+			double d0 = 0.0D;
+			if (railshape.isAscending()) {
+				d0 = 0.5D;
 			}
 
-			itemstack.shrink(1);
-			return ActionResultType.sidedSuccess(world.isClientSide);
+			BedMinecartEntity minecartEntity = BedMinecartEntity.createBedMinecart(world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.0625D + d0, (double)blockpos.getZ() + 0.5D);
+			minecartEntity.setColor(this.color);
+			if (itemstack.hasCustomHoverName()) {
+				minecartEntity.setCustomName(itemstack.getHoverName());
+			}
+
+			world.addFreshEntity(minecartEntity);
 		}
+
+		itemstack.shrink(1);
+		return InteractionResult.sidedSuccess(world.isClientSide);
 	}
 }

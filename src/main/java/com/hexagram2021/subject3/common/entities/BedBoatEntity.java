@@ -1,59 +1,68 @@
 package com.hexagram2021.subject3.common.entities;
 
+import com.google.common.collect.Lists;
 import com.hexagram2021.subject3.common.STSavedData;
 import com.hexagram2021.subject3.register.STEntities;
-import com.hexagram2021.subject3.register.STItems;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.LilyPadBlock;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.play.client.CSteerBoatPacket;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.BlockUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundPaddleBoatPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.WaterlilyBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public class BedBoatEntity extends Entity implements IBedVehicle {
-	private static final DataParameter<Integer> DATA_ID_HURT = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
-	private static final DataParameter<Integer> DATA_ID_HURT_DIR = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
-	private static final DataParameter<Float> DATA_ID_DAMAGE = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.FLOAT);
-	private static final DataParameter<Integer> DATA_ID_DYE_COLOR = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
-	private static final DataParameter<Integer> DATA_ID_TYPE = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
-	private static final DataParameter<Boolean> DATA_ID_PADDLE_LEFT = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Boolean> DATA_ID_PADDLE_RIGHT = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.BOOLEAN);
-	private static final DataParameter<Integer> DATA_ID_BUBBLE_TIME = EntityDataManager.defineId(BedBoatEntity.class, DataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_ID_HURT_DIR = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Float> DATA_ID_DAMAGE = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.FLOAT);
+	private static final EntityDataAccessor<Integer> DATA_ID_DYE_COLOR = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> DATA_ID_TYPE = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_LEFT = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Boolean> DATA_ID_PADDLE_RIGHT = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Integer> DATA_ID_BUBBLE_TIME = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
 	private final double[] paddlePositions = new double[2];
 	private float outOfControlTicks;
 	private float deltaRotation;
@@ -69,8 +78,8 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	private boolean inputDown;
 	private double waterLevel;
 	private float landFriction;
-	private BoatEntity.Status status;
-	private BoatEntity.Status oldStatus;
+	private Boat.Status status;
+	private Boat.Status oldStatus;
 	private double lastYd;
 	private boolean isAboveBubbleColumn;
 	private boolean bubbleColumnDirectionIsDown;
@@ -78,29 +87,28 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	private float bubbleAngle;
 	private float bubbleAngleO;
 
-	public BedBoatEntity(EntityType<?> entityType, World level) {
+	public BedBoatEntity(EntityType<?> entityType, Level level) {
 		super(entityType, level);
 		this.blocksBuilding = true;
-		this.forcedLoading = true;
 	}
 
-	public BedBoatEntity(World level, double x, double y, double z) {
+	public BedBoatEntity(Level level, double x, double y, double z) {
 		this(STEntities.BED_BOAT.get(), level);
 		this.setPos(x, y, z);
-		this.setDeltaMovement(Vector3d.ZERO);
+		this.setDeltaMovement(Vec3.ZERO);
 		this.xo = x;
 		this.yo = y;
 		this.zo = z;
 	}
 
 	@Override
-	protected float getEyeHeight(@Nonnull Pose pos, EntitySize entitySize) {
-		return entitySize.height;
+	protected float getEyeHeight(@Nonnull Pose pose, EntityDimensions dimensions) {
+		return dimensions.height;
 	}
 
-	@Override
-	protected boolean isMovementNoisy() {
-		return false;
+	@Override @Nonnull
+	protected Entity.MovementEmission getMovementEmission() {
+		return Entity.MovementEmission.NONE;
 	}
 
 	@Override
@@ -109,7 +117,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		this.entityData.define(DATA_ID_HURT_DIR, 1);
 		this.entityData.define(DATA_ID_DAMAGE, 0.0F);
 		this.entityData.define(DATA_ID_DYE_COLOR, DyeColor.WHITE.ordinal());
-		this.entityData.define(DATA_ID_TYPE, BoatEntity.Type.OAK.ordinal());
+		this.entityData.define(DATA_ID_TYPE, Boat.Type.OAK.ordinal());
 		this.entityData.define(DATA_ID_PADDLE_LEFT, false);
 		this.entityData.define(DATA_ID_PADDLE_RIGHT, false);
 		this.entityData.define(DATA_ID_BUBBLE_TIME, 0);
@@ -135,7 +143,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override @Nonnull
-	protected Vector3d getRelativePortalPosition(@Nonnull Direction.Axis axis, @Nonnull TeleportationRepositioner.Result result) {
+	protected Vec3 getRelativePortalPosition(@Nonnull Direction.Axis axis, @Nonnull BlockUtil.FoundRectangle result) {
 		return LivingEntity.resetForwardDirectionOfRelativePortalPosition(super.getRelativePortalPosition(axis, result));
 	}
 
@@ -149,12 +157,13 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		}
-		if (!this.level.isClientSide && !this.removed) {
+		if (!this.level.isClientSide && !this.isRemoved()) {
 			this.setHurtDir(-this.getHurtDir());
 			this.setHurtTime(10);
 			this.setDamage(this.getDamage() + damage * 10.0F);
 			this.markHurt();
-			boolean flag = damageSource.getEntity() instanceof PlayerEntity && ((PlayerEntity)damageSource.getEntity()).abilities.instabuild;
+			this.gameEvent(GameEvent.ENTITY_DAMAGED, damageSource.getEntity());
+			boolean flag = damageSource.getEntity() instanceof Player player && player.getAbilities().instabuild;
 			if (flag || this.getDamage() > 40.0F) {
 				if (!flag && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 					this.spawnAtLocation(this.getDropItem());
@@ -181,6 +190,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), this.getSwimSplashSound(), this.getSoundSource(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
 		}
 
+		this.gameEvent(GameEvent.SPLASH, this.getControllingPassenger());
 	}
 
 	@Override
@@ -196,7 +206,14 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@Nonnull
 	public Item getDropItem() {
-		return STItems.BedBoats.byTypeAndColor(this.getBoatType(), this.getBedColor());
+		return switch (this.getBoatType()) {
+			case OAK -> Items.OAK_BOAT;
+			case SPRUCE -> Items.SPRUCE_BOAT;
+			case BIRCH -> Items.BIRCH_BOAT;
+			case JUNGLE -> Items.JUNGLE_BOAT;
+			case ACACIA -> Items.ACACIA_BOAT;
+			case DARK_OAK -> Items.DARK_OAK_BOAT;
+		};
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -209,7 +226,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@Override
 	public boolean isPickable() {
-		return !this.removed;
+		return !this.isRemoved();
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -232,7 +249,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	public void tick() {
 		this.oldStatus = this.status;
 		this.status = this.getStatus();
-		if (this.status != BoatEntity.Status.UNDER_WATER && this.status != BoatEntity.Status.UNDER_FLOWING_WATER) {
+		if (this.status != Boat.Status.UNDER_WATER && this.status != Boat.Status.UNDER_FLOWING_WATER) {
 			this.outOfControlTicks = 0.0F;
 		} else {
 			++this.outOfControlTicks;
@@ -253,19 +270,19 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		super.tick();
 		this.tickLerp();
 		if (this.isControlledByLocalInstance()) {
-			if (this.getPassengers().isEmpty() || !(this.getPassengers().get(0) instanceof PlayerEntity)) {
+			if (!(this.getFirstPassenger() instanceof Player)) {
 				this.setPaddleState(false, false);
 			}
 
 			this.floatBoat();
 			if (this.level.isClientSide) {
 				this.controlBoat();
-				this.level.sendPacketToServer(new CSteerBoatPacket(this.getPaddleState(0), this.getPaddleState(1)));
+				this.level.sendPacketToServer(new ServerboundPaddleBoatPacket(this.getPaddleState(0), this.getPaddleState(1)));
 			}
 
 			this.move(MoverType.SELF, this.getDeltaMovement());
 		} else {
-			this.setDeltaMovement(Vector3d.ZERO);
+			this.setDeltaMovement(Vec3.ZERO);
 		}
 
 		this.tickBubbleColumn();
@@ -275,10 +292,11 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				if (!this.isSilent() && (this.paddlePositions[i] % (Math.PI * 2.0D)) <= Math.PI / 4.0D && (this.paddlePositions[i] + (Math.PI / 8.0D)) % (Math.PI * 2.0D) >= (Math.PI / 4.0D)) {
 					SoundEvent soundevent = this.getPaddleSound();
 					if (soundevent != null) {
-						Vector3d vector3d = this.getViewVector(1.0F);
-						double d0 = i == 1 ? -vector3d.z : vector3d.z;
-						double d1 = i == 1 ? vector3d.x : -vector3d.x;
+						Vec3 vec3 = this.getViewVector(1.0F);
+						double d0 = i == 1 ? -vec3.z : vec3.z;
+						double d1 = i == 1 ? vec3.x : -vec3.x;
 						this.level.playSound(null, this.getX() + d0, this.getY(), this.getZ() + d1, soundevent, this.getSoundSource(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+						this.level.gameEvent(this.getControllingPassenger(), GameEvent.SPLASH, new BlockPos(this.getX() + d0, this.getY(), this.getZ() + d1));
 					}
 				}
 
@@ -289,11 +307,18 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		}
 
 		this.checkInsideBlocks();
-		List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(0.2D, -0.01D, 0.2D), EntityPredicates.pushableBy(this));
+		List<Entity> list = this.level.getEntities(this, this.getBoundingBox().inflate(0.2D, -0.01D, 0.2D), EntitySelector.pushableBy(this));
 		if (!list.isEmpty()) {
+			boolean flag = !this.level.isClientSide && !(this.getControllingPassenger() instanceof Player);
+
 			for (Entity entity : list) {
 				if (!entity.hasPassenger(this)) {
-					this.push(entity);
+					if (flag && this.getPassengers().size() < 2 && !entity.isPassenger() && entity.getBbWidth() < this.getBbWidth() &&
+							entity instanceof LivingEntity && !(entity instanceof WaterAnimal) && !(entity instanceof Player)) {
+						entity.startRiding(this);
+					} else {
+						this.push(entity);
+					}
 				}
 			}
 		}
@@ -309,7 +334,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				this.bubbleMultiplier -= 0.1F;
 			}
 
-			this.bubbleMultiplier = MathHelper.clamp(this.bubbleMultiplier, 0.0F, 1.0F);
+			this.bubbleMultiplier = Mth.clamp(this.bubbleMultiplier, 0.0F, 1.0F);
 			this.bubbleAngleO = this.bubbleAngle;
 			this.bubbleAngle = 10.0F * (float)Math.sin(0.5F * this.level.getGameTime()) * this.bubbleMultiplier;
 		} else {
@@ -324,34 +349,27 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				int j = 60 - k - 1;
 				if (j > 0 && k == 0) {
 					this.setBubbleTime(0);
-					Vector3d vector3d = this.getDeltaMovement();
+					Vec3 vec3 = this.getDeltaMovement();
 					if (this.bubbleColumnDirectionIsDown) {
-						this.setDeltaMovement(vector3d.add(0.0D, -0.7D, 0.0D));
+						this.setDeltaMovement(vec3.add(0.0D, -0.7D, 0.0D));
 						this.ejectPassengers();
 					} else {
-						this.setDeltaMovement(vector3d.x, this.hasPassenger(PlayerEntity.class) ? 2.7D : 0.6D, vector3d.z);
+						this.setDeltaMovement(vec3.x, this.hasPassenger((entity) -> entity instanceof Player) ? 2.7D : 0.6D, vec3.z);
 					}
 				}
 
 				this.isAboveBubbleColumn = false;
 			}
 		}
-
 	}
 
 	@Nullable
 	protected SoundEvent getPaddleSound() {
-		switch(this.getStatus()) {
-			case IN_WATER:
-			case UNDER_WATER:
-			case UNDER_FLOWING_WATER:
-				return SoundEvents.BOAT_PADDLE_WATER;
-			case ON_LAND:
-				return SoundEvents.BOAT_PADDLE_LAND;
-			case IN_AIR:
-			default:
-				return null;
-		}
+		return switch (this.getStatus()) {
+			case IN_WATER, UNDER_WATER, UNDER_FLOWING_WATER -> SoundEvents.BOAT_PADDLE_WATER;
+			case ON_LAND -> SoundEvents.BOAT_PADDLE_LAND;
+			case IN_AIR -> null;
+		};
 	}
 
 	private void tickLerp() {
@@ -364,12 +382,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			double d0 = this.getX() + (this.lerpX - this.getX()) / this.lerpSteps;
 			double d1 = this.getY() + (this.lerpY - this.getY()) / this.lerpSteps;
 			double d2 = this.getZ() + (this.lerpZ - this.getZ()) / this.lerpSteps;
-			double d3 = MathHelper.wrapDegrees(this.lerpYRot - this.yRot);
-			this.yRot = (float)(this.yRot + d3 / this.lerpSteps);
-			this.xRot = (float)(this.xRot + (this.lerpXRot - this.xRot) / this.lerpSteps);
+			double d3 = Mth.wrapDegrees(this.lerpYRot - (double)this.getYRot());
+			this.setYRot(this.getYRot() + (float)d3 / (float)this.lerpSteps);
+			this.setXRot(this.getXRot() + (float)(this.lerpXRot - (double)this.getXRot()) / this.lerpSteps);
 			--this.lerpSteps;
 			this.setPos(d0, d1, d2);
-			this.setRot(this.yRot, this.xRot);
+			this.setRot(this.getYRot(), this.getXRot());
 		}
 	}
 
@@ -380,86 +398,88 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@OnlyIn(Dist.CLIENT)
 	public float getRowingTime(int index, float time) {
-		return this.getPaddleState(index) ? (float)MathHelper.clampedLerp(this.paddlePositions[index] - (Math.PI / 8.0D), this.paddlePositions[index], time) : 0.0F;
+		return this.getPaddleState(index) ? (float)Mth.clampedLerp(
+				this.paddlePositions[index] - (Math.PI / 8.0D), this.paddlePositions[index], time
+		) : 0.0F;
 	}
 
-	private BoatEntity.Status getStatus() {
-		BoatEntity.Status boatStatus = this.isUnderwater();
+	private Boat.Status getStatus() {
+		Boat.Status boatStatus = this.isUnderwater();
 		if (boatStatus != null) {
 			this.waterLevel = this.getBoundingBox().maxY;
 			return boatStatus;
 		}
 		if (this.checkInWater()) {
-			return BoatEntity.Status.IN_WATER;
+			return Boat.Status.IN_WATER;
 		}
 		float f = this.getGroundFriction();
 		if (f > 0.0F) {
 			this.landFriction = f;
-			return BoatEntity.Status.ON_LAND;
+			return Boat.Status.ON_LAND;
 		}
-		return BoatEntity.Status.IN_AIR;
+		return Boat.Status.IN_AIR;
 	}
 
 	public float getWaterLevelAbove() {
-		AxisAlignedBB axisalignedbb = this.getBoundingBox();
-		int i = MathHelper.floor(axisalignedbb.minX);
-		int j = MathHelper.ceil(axisalignedbb.maxX);
-		int k = MathHelper.floor(axisalignedbb.maxY);
-		int l = MathHelper.ceil(axisalignedbb.maxY - this.lastYd);
-		int i1 = MathHelper.floor(axisalignedbb.minZ);
-		int j1 = MathHelper.ceil(axisalignedbb.maxZ);
-		BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+		AABB aabb = this.getBoundingBox();
+		int minX = Mth.floor(aabb.minX);
+		int maxX = Mth.ceil(aabb.maxX);
+		int minY = Mth.floor(aabb.maxY);
+		int maxY = Mth.ceil(aabb.maxY - this.lastYd);
+		int minZ = Mth.floor(aabb.minZ);
+		int maxZ = Mth.ceil(aabb.maxZ);
+		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-		label39:
-		for(int k1 = k; k1 < l; ++k1) {
+		fluidHeightExceeded:
+		for(int k1 = minY; k1 < maxY; ++k1) {
 			float f = 0.0F;
 
-			for(int l1 = i; l1 < j; ++l1) {
-				for(int i2 = i1; i2 < j1; ++i2) {
-					mutablePos.set(l1, k1, i2);
-					FluidState fluidstate = this.level.getFluidState(mutablePos);
+			for(int x = minX; x < maxX; ++x) {
+				for(int z = minZ; z < maxZ; ++z) {
+					mutable.set(x, k1, z);
+					FluidState fluidstate = this.level.getFluidState(mutable);
 					if (fluidstate.is(FluidTags.WATER)) {
-						f = Math.max(f, fluidstate.getHeight(this.level, mutablePos));
+						f = Math.max(f, fluidstate.getHeight(this.level, mutable));
 					}
 
 					if (f >= 1.0F) {
-						continue label39;
+						continue fluidHeightExceeded;
 					}
 				}
 			}
 
 			if (f < 1.0F) {
-				return mutablePos.getY() + f;
+				return mutable.getY() + f;
 			}
 		}
 
-		return l + 1;
+		return maxY + 1;
 	}
 
 	public float getGroundFriction() {
-		AxisAlignedBB originAABB = this.getBoundingBox();
-		AxisAlignedBB aabb = new AxisAlignedBB(originAABB.minX, originAABB.minY - 0.001D, originAABB.minZ, originAABB.maxX, originAABB.minY, originAABB.maxZ);
-		int i = MathHelper.floor(aabb.minX) - 1;
-		int j = MathHelper.ceil(aabb.maxX) + 1;
-		int k = MathHelper.floor(aabb.minY) - 1;
-		int l = MathHelper.ceil(aabb.maxY) + 1;
-		int i1 = MathHelper.floor(aabb.minZ) - 1;
-		int j1 = MathHelper.ceil(aabb.maxZ) + 1;
-		VoxelShape voxelshape = VoxelShapes.create(aabb);
+		AABB aabb = this.getBoundingBox();
+		AABB aabb1 = new AABB(aabb.minX, aabb.minY - 0.001D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
+		int minX = Mth.floor(aabb1.minX) - 1;
+		int maxX = Mth.ceil(aabb1.maxX) + 1;
+		int minY = Mth.floor(aabb1.minY) - 1;
+		int maxY = Mth.ceil(aabb1.maxY) + 1;
+		int minZ = Mth.floor(aabb1.minZ) - 1;
+		int maxZ = Mth.ceil(aabb1.maxZ) + 1;
+		VoxelShape voxelshape = Shapes.create(aabb1);
 		float f = 0.0F;
 		int k1 = 0;
-		BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-		for(int l1 = i; l1 < j; ++l1) {
-			for(int i2 = i1; i2 < j1; ++i2) {
-				int j2 = (l1 != i && l1 != j - 1 ? 0 : 1) + (i2 != i1 && i2 != j1 - 1 ? 0 : 1);
-				if (j2 != 2) {
-					for(int k2 = k; k2 < l; ++k2) {
-						if (j2 <= 0 || k2 != k && k2 != l - 1) {
-							mutablePos.set(l1, k2, i2);
-							BlockState blockstate = this.level.getBlockState(mutablePos);
-							if (!(blockstate.getBlock() instanceof LilyPadBlock) && VoxelShapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level, mutablePos).move(l1, k2, i2), voxelshape, IBooleanFunction.AND)) {
-								f += blockstate.getSlipperiness(this.level, mutablePos, this);
+		for(int x = minX; x < maxX; ++x) {
+			for(int z = minZ; z < maxZ; ++z) {
+				int cnt = (x != minX && x != maxX - 1 ? 0 : 1) + (z != minZ && z != maxZ - 1 ? 0 : 1);
+				if (cnt != 2) {
+					for(int k2 = minY; k2 < maxY; ++k2) {
+						if (cnt <= 0 || k2 != minY && k2 != maxY - 1) {
+							mutable.set(x, k2, z);
+							BlockState blockstate = this.level.getBlockState(mutable);
+							if (!(blockstate.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level, mutable).move(x, k2, z), voxelshape, BooleanOp.AND)) {
+								f += blockstate.getFriction(this.level, mutable, this);
 								++k1;
 							}
 						}
@@ -472,26 +492,26 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	private boolean checkInWater() {
-		AxisAlignedBB axisalignedbb = this.getBoundingBox();
-		int i = MathHelper.floor(axisalignedbb.minX);
-		int j = MathHelper.ceil(axisalignedbb.maxX);
-		int k = MathHelper.floor(axisalignedbb.minY);
-		int l = MathHelper.ceil(axisalignedbb.minY + 0.001D);
-		int i1 = MathHelper.floor(axisalignedbb.minZ);
-		int j1 = MathHelper.ceil(axisalignedbb.maxZ);
+		AABB aabb = this.getBoundingBox();
+		int minX = Mth.floor(aabb.minX);
+		int maxX = Mth.ceil(aabb.maxX);
+		int minY = Mth.floor(aabb.minY);
+		int maxY = Mth.ceil(aabb.minY + 0.001D);
+		int minZ = Mth.floor(aabb.minZ);
+		int maxZ = Mth.ceil(aabb.maxZ);
 		boolean flag = false;
-		this.waterLevel = Double.MIN_VALUE;
-		BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+		this.waterLevel = -Double.MAX_VALUE;
+		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-		for(int k1 = i; k1 < j; ++k1) {
-			for(int l1 = k; l1 < l; ++l1) {
-				for(int i2 = i1; i2 < j1; ++i2) {
-					mutablePos.set(k1, l1, i2);
-					FluidState fluidstate = this.level.getFluidState(mutablePos);
+		for(int x = minX; x < maxX; ++x) {
+			for(int y = minY; y < maxY; ++y) {
+				for(int z = minZ; z < maxZ; ++z) {
+					mutable.set(x, y, z);
+					FluidState fluidstate = this.level.getFluidState(mutable);
 					if (fluidstate.is(FluidTags.WATER)) {
-						float f = l1 + fluidstate.getHeight(this.level, mutablePos);
+						float f = (float)y + fluidstate.getHeight(this.level, mutable);
 						this.waterLevel = Math.max(f, this.waterLevel);
-						flag |= axisalignedbb.minY < f;
+						flag |= aabb.minY < (double)f;
 					}
 				}
 			}
@@ -501,26 +521,26 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Nullable
-	private BoatEntity.Status isUnderwater() {
-		AxisAlignedBB axisalignedbb = this.getBoundingBox();
-		double d0 = axisalignedbb.maxY + 0.001D;
-		int i = MathHelper.floor(axisalignedbb.minX);
-		int j = MathHelper.ceil(axisalignedbb.maxX);
-		int k = MathHelper.floor(axisalignedbb.maxY);
-		int l = MathHelper.ceil(d0);
-		int i1 = MathHelper.floor(axisalignedbb.minZ);
-		int j1 = MathHelper.ceil(axisalignedbb.maxZ);
+	private Boat.Status isUnderwater() {
+		AABB aabb = this.getBoundingBox();
+		double d0 = aabb.maxY + 0.001D;
+		int minX = Mth.floor(aabb.minX);
+		int maxX = Mth.ceil(aabb.maxX);
+		int minY = Mth.floor(aabb.maxY);
+		int maxY = Mth.ceil(d0);
+		int minZ = Mth.floor(aabb.minZ);
+		int maxZ = Mth.ceil(aabb.maxZ);
 		boolean flag = false;
-		BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+		BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-		for(int k1 = i; k1 < j; ++k1) {
-			for(int l1 = k; l1 < l; ++l1) {
-				for(int i2 = i1; i2 < j1; ++i2) {
-					mutablePos.set(k1, l1, i2);
-					FluidState fluidstate = this.level.getFluidState(mutablePos);
-					if (fluidstate.is(FluidTags.WATER) && d0 < mutablePos.getY() + fluidstate.getHeight(this.level, mutablePos)) {
+		for(int k1 = minX; k1 < maxX; ++k1) {
+			for(int l1 = minY; l1 < maxY; ++l1) {
+				for(int i2 = minZ; i2 < maxZ; ++i2) {
+					mutable.set(k1, l1, i2);
+					FluidState fluidstate = this.level.getFluidState(mutable);
+					if (fluidstate.is(FluidTags.WATER) && d0 < mutable.getY() + fluidstate.getHeight(this.level, mutable)) {
 						if (!fluidstate.isSource()) {
-							return BoatEntity.Status.UNDER_FLOWING_WATER;
+							return Boat.Status.UNDER_FLOWING_WATER;
 						}
 
 						flag = true;
@@ -529,44 +549,44 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			}
 		}
 
-		return flag ? BoatEntity.Status.UNDER_WATER : null;
+		return flag ? Boat.Status.UNDER_WATER : null;
 	}
 
 	private void floatBoat() {
 		double d1 = this.isNoGravity() ? 0.0D : -0.04D;
 		double d2 = 0.0D;
 		double invFriction = 0.05D;
-		if (this.oldStatus == BoatEntity.Status.IN_AIR && this.status != BoatEntity.Status.IN_AIR && this.status != BoatEntity.Status.ON_LAND) {
+		if (this.oldStatus == Boat.Status.IN_AIR && this.status != Boat.Status.IN_AIR && this.status != Boat.Status.ON_LAND) {
 			this.waterLevel = this.getY(1.0D);
 			this.setPos(this.getX(), this.getWaterLevelAbove() - this.getBbHeight() + 0.101D, this.getZ());
 			this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
 			this.lastYd = 0.0D;
-			this.status = BoatEntity.Status.IN_WATER;
+			this.status = Boat.Status.IN_WATER;
 		} else {
-			if (this.status == BoatEntity.Status.IN_WATER) {
+			if (this.status == Boat.Status.IN_WATER) {
 				d2 = (this.waterLevel - this.getY()) / this.getBbHeight();
 				invFriction = 0.9D;
-			} else if (this.status == BoatEntity.Status.UNDER_FLOWING_WATER) {
+			} else if (this.status == Boat.Status.UNDER_FLOWING_WATER) {
 				d1 = -7.0E-4D;
 				invFriction = 0.9D;
-			} else if (this.status == BoatEntity.Status.UNDER_WATER) {
-				d2 = 0.01F;
+			} else if (this.status == Boat.Status.UNDER_WATER) {
+				d2 = 0.01D;
 				invFriction = 0.45D;
-			} else if (this.status == BoatEntity.Status.IN_AIR) {
+			} else if (this.status == Boat.Status.IN_AIR) {
 				invFriction = 0.9D;
-			} else if (this.status == BoatEntity.Status.ON_LAND) {
+			} else if (this.status == Boat.Status.ON_LAND) {
 				invFriction = this.landFriction;
-				if (this.getControllingPassenger() instanceof PlayerEntity) {
+				if (this.getControllingPassenger() instanceof Player) {
 					this.landFriction /= 2.0F;
 				}
 			}
 
-			Vector3d vector3d = this.getDeltaMovement();
-			this.setDeltaMovement(vector3d.x * invFriction, vector3d.y + d1, vector3d.z * invFriction);
+			Vec3 vec3 = this.getDeltaMovement();
+			this.setDeltaMovement(vec3.x * invFriction, vec3.y + d1, vec3.z * invFriction);
 			this.deltaRotation *= invFriction;
 			if (d2 > 0.0D) {
-				Vector3d vector3d1 = this.getDeltaMovement();
-				this.setDeltaMovement(vector3d1.x, (vector3d1.y + d2 * 0.06153846016296973D) * 0.75D, vector3d1.z);
+				Vec3 vec31 = this.getDeltaMovement();
+				this.setDeltaMovement(vec31.x, (vec31.y + d2 * 0.06153846016296973D) * 0.75D, vec31.z);
 			}
 		}
 
@@ -587,7 +607,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				f += 0.005F;
 			}
 
-			this.yRot += this.deltaRotation;
+			this.setYRot(this.getYRot() + this.deltaRotation);
 			if (this.inputUp) {
 				f += 0.04F;
 			}
@@ -596,7 +616,11 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 				f -= 0.005F;
 			}
 
-			this.setDeltaMovement(this.getDeltaMovement().add(MathHelper.sin(-this.yRot * ((float)Math.PI / 180.0F)) * f, 0.0D, MathHelper.cos(this.yRot * ((float)Math.PI / 180.0F)) * f));
+			this.setDeltaMovement(this.getDeltaMovement().add(
+					Mth.sin(-this.getYRot() * ((float)Math.PI / 180F)) * f,
+					0.0D,
+					Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * f)
+			);
 			this.setPaddleState(this.inputRight && !this.inputLeft || this.inputUp, this.inputLeft && !this.inputRight || this.inputUp);
 		}
 	}
@@ -605,7 +629,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	public void positionRider(@Nonnull Entity entity) {
 		if (this.hasPassenger(entity)) {
 			float f = 0.0F;
-			float f1 = (this.removed ? 0.01F : (float)this.getPassengersRidingOffset()) + (float)entity.getMyRidingOffset();
+			float f1 = (this.isRemoved() ? 0.01F : (float)this.getPassengersRidingOffset()) + (float)entity.getMyRidingOffset();
 			if (this.getPassengers().size() > 1) {
 				int i = this.getPassengers().indexOf(entity);
 				if (i == 0) {
@@ -614,19 +638,19 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 					f = -0.6F;
 				}
 
-				if (entity instanceof AnimalEntity) {
+				if (entity instanceof Animal) {
 					f = f + 0.2F;
 				}
 			}
 
-			Vector3d vector3d = (new Vector3d(f, 0.0D, 0.0D)).yRot(-this.yRot * ((float)Math.PI / 180.0F) - ((float)Math.PI / 2.0F));
-			entity.setPos(this.getX() + vector3d.x, this.getY() + f1, this.getZ() + vector3d.z);
-			entity.yRot += this.deltaRotation;
+			Vec3 vec3 = (new Vec3(f, 0.0D, 0.0D)).yRot(-this.getYRot() * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
+			entity.setPos(this.getX() + vec3.x, this.getY() + (double)f1, this.getZ() + vec3.z);
+			entity.setYRot(entity.getYRot() + this.deltaRotation);
 			entity.setYHeadRot(entity.getYHeadRot() + this.deltaRotation);
 			this.clampRotation(entity);
-			if (entity instanceof AnimalEntity && this.getPassengers().size() > 1) {
+			if (entity instanceof Animal && this.getPassengers().size() > 1) {
 				int j = entity.getId() % 2 == 0 ? 90 : 270;
-				entity.setYBodyRot(((AnimalEntity)entity).yBodyRot + j);
+				entity.setYBodyRot(((Animal)entity).yBodyRot + j);
 				entity.setYHeadRot(entity.getYHeadRot() + j);
 			}
 
@@ -634,27 +658,30 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override @Nonnull
-	public Vector3d getDismountLocationForPassenger(LivingEntity livingEntity) {
-		Vector3d vector3d = getCollisionHorizontalEscapeVector(this.getBbWidth() * MathHelper.SQRT_OF_TWO, livingEntity.getBbWidth(), this.yRot);
-		double d0 = this.getX() + vector3d.x;
-		double d1 = this.getZ() + vector3d.z;
+	public Vec3 getDismountLocationForPassenger(LivingEntity livingEntity) {
+		Vec3 vec3 = getCollisionHorizontalEscapeVector(this.getBbWidth() * Mth.SQRT_OF_TWO, livingEntity.getBbWidth(), livingEntity.getYRot());
+		double d0 = this.getX() + vec3.x;
+		double d1 = this.getZ() + vec3.z;
 		BlockPos blockpos = new BlockPos(d0, this.getBoundingBox().maxY, d1);
 		BlockPos below = blockpos.below();
 		if (!this.level.isWaterAt(below)) {
-			double d2 = blockpos.getY() + this.level.getBlockFloorHeight(blockpos);
-			double d3 = blockpos.getY() + this.level.getBlockFloorHeight(below);
+			List<Vec3> floors = Lists.newArrayList();
+			double d2 = this.level.getBlockFloorHeight(blockpos);
+			if (DismountHelper.isBlockFloorValid(d2)) {
+				floors.add(new Vec3(d0, (double)blockpos.getY() + d2, d1));
+			}
+
+			double d3 = this.level.getBlockFloorHeight(below);
+			if (DismountHelper.isBlockFloorValid(d3)) {
+				floors.add(new Vec3(d0, (double)below.getY() + d3, d1));
+			}
 
 			for(Pose pose : livingEntity.getDismountPoses()) {
-				Vector3d vector3d1 = TransportationHelper.findDismountLocation(this.level, d0, d2, d1, livingEntity, pose);
-				if (vector3d1 != null) {
-					livingEntity.setPose(pose);
-					return vector3d1;
-				}
-
-				Vector3d vector3d2 = TransportationHelper.findDismountLocation(this.level, d0, d3, d1, livingEntity, pose);
-				if (vector3d2 != null) {
-					livingEntity.setPose(pose);
-					return vector3d2;
+				for(Vec3 floor : floors) {
+					if (DismountHelper.canDismountTo(this.level, floor, livingEntity, pose)) {
+						livingEntity.setPose(pose);
+						return floor;
+					}
 				}
 			}
 		}
@@ -663,12 +690,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	protected void clampRotation(Entity entity) {
-		entity.setYBodyRot(this.yRot);
-		float f = MathHelper.wrapDegrees(entity.yRot - this.yRot);
-		float f1 = MathHelper.clamp(f, -105.0F, 105.0F);
+		entity.setYBodyRot(this.getYRot());
+		float f = Mth.wrapDegrees(entity.getYRot() - this.getYRot());
+		float f1 = Mth.clamp(f, -105.0F, 105.0F);
 		entity.yRotO += f1 - f;
-		entity.yRot += f1 - f;
-		entity.setYHeadRot(entity.yRot);
+		entity.setYRot(entity.getYRot() + f1 - f);
+		entity.setYHeadRot(entity.getYRot());
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -678,47 +705,51 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override
-	protected void addAdditionalSaveData(CompoundNBT nbt) {
+	protected void addAdditionalSaveData(CompoundTag nbt) {
 		nbt.putString("DyeColor", this.getBedColor().getName());
 		nbt.putString("Type", this.getBoatType().getName());
 	}
 
 	@Override
-	protected void readAdditionalSaveData(CompoundNBT nbt) {
-		if (nbt.contains("Type", Constants.NBT.TAG_STRING)) {
-			this.setType(BoatEntity.Type.byName(nbt.getString("Type")));
+	protected void readAdditionalSaveData(CompoundTag nbt) {
+		if (nbt.contains("Type", Tag.TAG_STRING)) {
+			this.setType(Boat.Type.byName(nbt.getString("Type")));
 		}
-		if (nbt.contains("DyeColor", Constants.NBT.TAG_STRING)) {
+		if (nbt.contains("DyeColor", Tag.TAG_STRING)) {
 			this.setColor(DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE));
 		}
 	}
 
 	@Override @Nonnull
-	public ActionResultType interact(PlayerEntity player, @Nonnull Hand hand) {
+	public InteractionResult interact(Player player, @Nonnull InteractionHand hand) {
 		if (player.isSecondaryUseActive()) {
-			return ActionResultType.PASS;
+			return InteractionResult.PASS;
 		}
 		if (this.outOfControlTicks < 60.0F) {
 			if (!this.level.isClientSide) {
 				if (!BedBlock.canSetSpawn(this.level)) {
-					this.level.explode(this, DamageSource.badRespawnPointExplosion(), null, this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D, 5.0F, true, Explosion.Mode.DESTROY);
+					this.level.explode(
+							this, DamageSource.badRespawnPointExplosion(), null,
+							this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D,
+							5.0F, true, Explosion.BlockInteraction.DESTROY
+					);
 					this.removeBedVehicle();
-					return ActionResultType.SUCCESS;
+					return InteractionResult.SUCCESS;
 				}
-				ActionResultType ret;
+				InteractionResult ret;
 				if(player.startRiding(this)) {
-					ret = ActionResultType.CONSUME;
-					if(player instanceof IHasVehicleRespawnPosition) {
-						((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+					ret = InteractionResult.CONSUME;
+					if(player instanceof IHasVehicleRespawnPosition hasVehicleRespawnPosition) {
+						hasVehicleRespawnPosition.setBedVehicleUUID(this.uuid);
 					}
 				} else {
-					ret = ActionResultType.PASS;
+					ret = InteractionResult.PASS;
 				}
 				return ret;
 			}
-			return ActionResultType.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
-		return ActionResultType.PASS;
+		return InteractionResult.PASS;
 	}
 
 	@Override
@@ -727,13 +758,13 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		if (!this.isPassenger()) {
 			if (onGround) {
 				if (this.fallDistance > 3.0F) {
-					if (this.status != BoatEntity.Status.ON_LAND) {
+					if (this.status != Boat.Status.ON_LAND) {
 						this.fallDistance = 0.0F;
 						return;
 					}
 
-					this.causeFallDamage(this.fallDistance, 1.0F);
-					if (!this.level.isClientSide && !this.removed) {
+					this.causeFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
+					if (!this.level.isClientSide && !this.isRemoved()) {
 						this.removeBedVehicle();
 						if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 							for(int i = 0; i < 3; ++i) {
@@ -751,22 +782,21 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			} else if (!this.level.getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && y < 0.0D) {
 				this.fallDistance = (float)(this.fallDistance - y);
 			}
-
 		}
 	}
 
 	@Override
 	public void removeBedVehicle() {
 		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
-		if(chunkPos != null && this.level instanceof ServerWorld) {
-			STSavedData.updateForceChunk(chunkPos, (ServerWorld)this.level, false);
+		if(chunkPos != null && this.level instanceof ServerLevel) {
+			STSavedData.updateForceChunk(chunkPos, (ServerLevel)this.level, false);
 		}
-		this.remove();
+		this.kill();
 	}
 
 	@Override
 	public float getBedVehicleRotY() {
-		return this.yRot;
+		return this.getYRot();
 	}
 	@Override
 	public double getBedVehicleOffsetY() {
@@ -803,7 +833,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@OnlyIn(Dist.CLIENT)
 	public float getBubbleAngle(float rate) {
-		return MathHelper.lerp(rate, this.bubbleAngleO, this.bubbleAngle);
+		return Mth.lerp(rate, this.bubbleAngleO, this.bubbleAngle);
 	}
 
 	public void setHurtDir(int hurtDir) {
@@ -814,12 +844,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 		return this.entityData.get(DATA_ID_HURT_DIR);
 	}
 
-	public void setType(BoatEntity.Type type) {
+	public void setType(Boat.Type type) {
 		this.entityData.set(DATA_ID_TYPE, type.ordinal());
 	}
 
-	public BoatEntity.Type getBoatType() {
-		return BoatEntity.Type.byId(this.entityData.get(DATA_ID_TYPE));
+	public Boat.Type getBoatType() {
+		return Boat.Type.byId(this.entityData.get(DATA_ID_TYPE));
 	}
 
 	@Override
@@ -839,8 +869,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@Override @Nullable
 	public Entity getControllingPassenger() {
-		List<Entity> list = this.getPassengers();
-		return list.isEmpty() ? null : list.get(0);
+		return this.getFirstPassenger();
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -852,13 +881,13 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override @Nonnull
-	public IPacket<?> getAddEntityPacket() {
+	public Packet<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 
 	@Override
 	public boolean isUnderWater() {
-		return this.status == BoatEntity.Status.UNDER_WATER || this.status == BoatEntity.Status.UNDER_FLOWING_WATER;
+		return this.status == Boat.Status.UNDER_WATER || this.status == Boat.Status.UNDER_FLOWING_WATER;
 	}
 
 	@Override
@@ -878,5 +907,10 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	@Override
 	public boolean shouldRiderSit() {
 		return false;
+	}
+
+	@Override
+	public ItemStack getPickResult() {
+		return new ItemStack(this.getDropItem());
 	}
 }

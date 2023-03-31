@@ -3,14 +3,14 @@ package com.hexagram2021.subject3.register;
 import com.hexagram2021.subject3.Subject3;
 import com.hexagram2021.subject3.common.items.BedBoatItem;
 import com.hexagram2021.subject3.common.items.BedMinecartItem;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -25,19 +25,19 @@ public class STItems {
 
 	@SuppressWarnings("unchecked")
 	public static final class BedBoats {
-		public static final ItemRegObject<BedBoatItem>[][] BED_BOATS;
+		public static final ItemEntry<BedBoatItem>[][] BED_BOATS;
 
-		public static Item byTypeAndColor(BoatEntity.Type type, DyeColor color) {
+		public static Item byTypeAndColor(Boat.Type type, DyeColor color) {
 			return BED_BOATS[type.ordinal()][color.ordinal()].get();
 		}
 
 		private static void init() {}
 
 		static {
-			BED_BOATS = new ItemRegObject[BoatEntity.Type.values().length][DyeColor.values().length];
-			for(BoatEntity.Type type: BoatEntity.Type.values()) {
+			BED_BOATS = new ItemEntry[Boat.Type.values().length][DyeColor.values().length];
+			for(Boat.Type type: Boat.Type.values()) {
 				for(DyeColor color: DyeColor.values()) {
-					BED_BOATS[type.ordinal()][color.ordinal()] = ItemRegObject.register(
+					BED_BOATS[type.ordinal()][color.ordinal()] = ItemEntry.register(
 							type.getName() + "_" + color.getName() + "_bed_boat", () -> new BedBoatItem(type, color, new Item.Properties().tab(Subject3.ITEM_GROUP).stacksTo(1))
 					);
 				}
@@ -47,7 +47,7 @@ public class STItems {
 	
 	@SuppressWarnings("unchecked")
 	public static final class BedMinecarts {
-		public static final ItemRegObject<BedMinecartItem>[] BED_MINECARTS;
+		public static final ItemEntry<BedMinecartItem>[] BED_MINECARTS;
 		
 		public static BedMinecartItem byColor(DyeColor color) {
 			return BED_MINECARTS[color.ordinal()].get();
@@ -56,10 +56,10 @@ public class STItems {
 		private static void init() {}
 
 		static {
-			BED_MINECARTS = new ItemRegObject[DyeColor.values().length];
+			BED_MINECARTS = new ItemEntry[DyeColor.values().length];
 
 			for(DyeColor color: DyeColor.values()) {
-				BED_MINECARTS[color.ordinal()] = ItemRegObject.register(
+				BED_MINECARTS[color.ordinal()] = ItemEntry.register(
 						color.getName() + "_bed_minecart", () -> new BedMinecartItem(color, new Item.Properties().tab(Subject3.ITEM_GROUP).stacksTo(1))
 				);
 			}
@@ -75,39 +75,35 @@ public class STItems {
 
 
 	@SuppressWarnings("unused")
-	public static class ItemRegObject<T extends Item> implements Supplier<T>, IItemProvider {
+	public static class ItemEntry<T extends Item> implements Supplier<T>, ItemLike {
 		private final RegistryObject<T> regObject;
 
-		private static ItemRegObject<Item> simple(String name, Consumer<Item.Properties> makeProps, Consumer<Item> processItem) {
+		private static ItemEntry<Item> simple(String name, Consumer<Item.Properties> makeProps, Consumer<Item> processItem) {
 			return register(name, () -> Util.make(new Item(Util.make(new Item.Properties(), makeProps)), processItem));
 		}
 
-		private static <T extends Item> ItemRegObject<T> register(String name, Supplier<? extends T> make) {
-			return new ItemRegObject<>(REGISTER.register(name, make));
+		private static <T extends Item> ItemEntry<T> register(String name, Supplier<? extends T> make) {
+			return new ItemEntry<>(REGISTER.register(name, make));
 		}
 
-		private ItemRegObject(RegistryObject<T> regObject)
-		{
+		private ItemEntry(RegistryObject<T> regObject) {
 			this.regObject = regObject;
 		}
 
 		@Override
 		@Nonnull
-		public T get()
-		{
-			return regObject.get();
+		public T get() {
+			return this.regObject.get();
 		}
 
 		@Nonnull
 		@Override
-		public Item asItem()
-		{
-			return regObject.get();
+		public Item asItem() {
+			return this.regObject.get();
 		}
 
-		public ResourceLocation getId()
-		{
-			return regObject.getId();
+		public ResourceLocation getId() {
+			return this.regObject.getId();
 		}
 	}
 }

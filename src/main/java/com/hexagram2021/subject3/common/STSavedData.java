@@ -1,20 +1,19 @@
 package com.hexagram2021.subject3.common;
 
 import com.hexagram2021.subject3.common.utils.STBedVehicles;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class STSavedData extends WorldSavedData {
+public class STSavedData extends SavedData {
 	private static STSavedData INSTANCE;
 	public static final String SAVED_DATA_NAME = "Subject3-SavedData";
 
@@ -25,21 +24,17 @@ public class STSavedData extends WorldSavedData {
 	private static final String UUID_KEY = "UUID";
 
 	public STSavedData() {
-		this(SAVED_DATA_NAME);
-	}
-
-	public STSavedData(String name) {
-		super(name);
+		super();
 		this.bedVehicles = new STBedVehicles();
 	}
 
-	@Override
-	public void load(CompoundNBT nbt) {
-		if(nbt.contains(BED_VEHICLES_KEY, Constants.NBT.TAG_LIST)) {
-			ListNBT allBedVehicles = nbt.getList(BED_VEHICLES_KEY, Constants.NBT.TAG_COMPOUND);
+	public STSavedData(CompoundTag nbt) {
+		this();
+		if(nbt.contains(BED_VEHICLES_KEY, Tag.TAG_LIST)) {
+			ListTag allBedVehicles = nbt.getList(BED_VEHICLES_KEY, Tag.TAG_COMPOUND);
 
-			for(INBT entry: allBedVehicles) {
-				CompoundNBT compound = (CompoundNBT)entry;
+			for(Tag entry: allBedVehicles) {
+				CompoundTag compound = (CompoundTag)entry;
 				this.bedVehicles.bedVehicles.put(
 						compound.getUUID(UUID_KEY),
 						new ChunkPos(compound.getLong(POSITION_KEY))
@@ -49,11 +44,11 @@ public class STSavedData extends WorldSavedData {
 	}
 
 	@Override @Nonnull
-	public CompoundNBT save(CompoundNBT nbt) {
-		ListNBT allBedVehicles = new ListNBT();
+	public CompoundTag save(CompoundTag nbt) {
+		ListTag allBedVehicles = new ListTag();
 		synchronized (this.bedVehicles.bedVehicles) {
 			this.bedVehicles.bedVehicles.forEach((uuid, chunkPos) -> {
-				CompoundNBT compound = new CompoundNBT();
+				CompoundTag compound = new CompoundTag();
 				compound.putUUID(UUID_KEY, uuid);
 				compound.putLong(POSITION_KEY, chunkPos.toLong());
 
@@ -66,7 +61,7 @@ public class STSavedData extends WorldSavedData {
 
 	public static void markAllRelatedChunks(MinecraftServer server) {
 		if(INSTANCE != null) {
-			ServerWorld level = server.overworld();
+			ServerLevel level = server.overworld();
 			INSTANCE.bedVehicles.markAllRelatedChunks(level);
 		}
 	}
@@ -91,7 +86,7 @@ public class STSavedData extends WorldSavedData {
 		return ret;
 	}
 
-	public static void updateForceChunk(ChunkPos chunkPos, ServerWorld level, boolean force) {
+	public static void updateForceChunk(ChunkPos chunkPos, ServerLevel level, boolean force) {
 		if(INSTANCE != null) {
 			if (force) {
 				INSTANCE.bedVehicles.updateForceChunkLoad(chunkPos, level);
