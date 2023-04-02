@@ -44,6 +44,24 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 	}
 
 	@Override
+	public void setPos(double x, double y, double z) {
+		super.setPos(x, y, z);
+
+		if(this.level instanceof ServerLevel serverlevel) {
+			if (serverlevel.dimension().equals(ServerLevel.OVERWORLD)) {
+				ChunkPos newPos = new ChunkPos(this.blockPosition());
+				ChunkPos oldPos = STSavedData.addBedVehicle(this.uuid, newPos);
+				if (!newPos.equals(oldPos)) {
+					STSavedData.updateForceChunk(newPos, serverlevel, true);
+					if (oldPos != null) {
+						STSavedData.updateForceChunk(oldPos, serverlevel, false);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	protected void defineSynchedData() {
 		super.defineSynchedData();
 		this.entityData.define(DATA_ID_DYE_COLOR, DyeColor.WHITE.ordinal());
@@ -66,7 +84,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 						this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D,
 						5.0F, true, Explosion.BlockInteraction.DESTROY
 				);
-				this.removeBedVehicle();
+				this.kill();
 				return InteractionResult.SUCCESS;
 			}
 			if(player.startRiding(this)) {
@@ -96,7 +114,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 			if (flag || this.getDamage() > 40.0F) {
 				this.ejectPassengers();
 				if (flag && !this.hasCustomName()) {
-					this.removeBedVehicle();
+					this.kill();
 				} else {
 					this.destroy(damageSource);
 				}
@@ -107,7 +125,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 
 	@Override
 	public void destroy(@Nonnull DamageSource damageSource) {
-		this.removeBedVehicle();
+		this.kill();
 		if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 			ItemStack itemstack = new ItemStack(Items.MINECART);
 			if (this.hasCustomName()) {
@@ -169,12 +187,12 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 	}
 
 	@Override
-	public void removeBedVehicle() {
+	public void kill() {
 		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
 		if(chunkPos != null && this.level instanceof ServerLevel serverLevel) {
 			STSavedData.updateForceChunk(chunkPos, serverLevel, false);
 		}
-		this.kill();
+		super.kill();
 	}
 
 	@Override

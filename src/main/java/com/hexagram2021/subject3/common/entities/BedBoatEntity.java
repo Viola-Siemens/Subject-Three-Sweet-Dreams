@@ -102,6 +102,24 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override
+	public void setPos(double x, double y, double z) {
+		super.setPos(x, y, z);
+
+		if(this.level instanceof ServerLevel serverlevel) {
+			if (serverlevel.dimension().equals(ServerLevel.OVERWORLD)) {
+				ChunkPos newPos = new ChunkPos(this.blockPosition());
+				ChunkPos oldPos = STSavedData.addBedVehicle(this.uuid, newPos);
+				if (!newPos.equals(oldPos)) {
+					STSavedData.updateForceChunk(newPos, serverlevel, true);
+					if (oldPos != null) {
+						STSavedData.updateForceChunk(oldPos, serverlevel, false);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	protected float getEyeHeight(@Nonnull Pose pose, EntityDimensions dimensions) {
 		return dimensions.height;
 	}
@@ -169,7 +187,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 					this.spawnAtLocation(this.getDropItem());
 				}
 
-				this.removeBedVehicle();
+				this.kill();
 			}
 		}
 		return true;
@@ -733,7 +751,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 							this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D,
 							5.0F, true, Explosion.BlockInteraction.DESTROY
 					);
-					this.removeBedVehicle();
+					this.kill();
 					return InteractionResult.SUCCESS;
 				}
 				InteractionResult ret;
@@ -765,7 +783,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 					this.causeFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
 					if (!this.level.isClientSide && !this.isRemoved()) {
-						this.removeBedVehicle();
+						this.kill();
 						if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 							for(int i = 0; i < 3; ++i) {
 								this.spawnAtLocation(this.getBoatType().getPlanks());
@@ -786,12 +804,12 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Override
-	public void removeBedVehicle() {
+	public void kill() {
 		ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
 		if(chunkPos != null && this.level instanceof ServerLevel) {
 			STSavedData.updateForceChunk(chunkPos, (ServerLevel)this.level, false);
 		}
-		this.kill();
+		super.kill();
 	}
 
 	@Override
