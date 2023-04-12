@@ -10,11 +10,11 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +39,7 @@ public class Subject3 {
 		event.enqueueWork(STContent::init);
 	}
 
-	public void serverStarted(FMLServerStartedEvent event) {
+	public void serverStarted(ServerStartedEvent event) {
 		ServerLevel world = event.getServer().getLevel(Level.OVERWORLD);
 		assert world != null;
 		if (!world.isClientSide) {
