@@ -143,7 +143,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 	}
 
 	@Override
-	public ItemStack getCartItem() {
+	public ItemStack getPickResult() {
 		return new ItemStack(STItems.BedMinecarts.byColor(this.getBedColor()));
 	}
 
