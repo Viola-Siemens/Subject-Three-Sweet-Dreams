@@ -184,7 +184,8 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 			boolean flag = damageSource.getEntity() instanceof Player player && player.getAbilities().instabuild;
 			if (flag || this.getDamage() > 40.0F) {
 				if (!flag && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-					this.spawnAtLocation(this.getDropItem());
+					this.spawnAtLocation(this.getDropBoatItem());
+					this.spawnAtLocation(IBedVehicle.getBedBlock(this.getBedColor()));
 				}
 
 				this.kill();
@@ -223,7 +224,7 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 	}
 
 	@Nonnull
-	public Item getDropItem() {
+	public Item getDropBoatItem() {
 		return switch (this.getBoatType()) {
 			case OAK -> Items.OAK_BOAT;
 			case SPRUCE -> Items.SPRUCE_BOAT;
@@ -929,6 +930,6 @@ public class BedBoatEntity extends Entity implements IBedVehicle {
 
 	@Override
 	public ItemStack getPickResult() {
-		return new ItemStack(this.getDropItem());
+		return new ItemStack(this.getDropBoatItem());
 	}
 }
