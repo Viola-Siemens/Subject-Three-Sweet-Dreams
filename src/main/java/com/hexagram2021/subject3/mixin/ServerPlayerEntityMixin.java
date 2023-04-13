@@ -1,10 +1,9 @@
 package com.hexagram2021.subject3.mixin;
 
 import com.hexagram2021.subject3.common.entities.IHasVehicleRespawnPosition;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +42,7 @@ public class ServerPlayerEntityMixin implements IHasVehicleRespawnPosition {
 	public void setBedVehicleUUID(@Nullable UUID uuid) {
 		if(!Objects.equals(uuid, this.respawnBedVehicle)) {
 			this.respawnBedVehicle = uuid;
-			((ServerPlayer)(Object)this).sendMessage(new TranslatableComponent("block.minecraft.set_spawn"), Util.NIL_UUID);
+			((ServerPlayer)(Object)this).sendSystemMessage(Component.translatable("block.minecraft.set_spawn"));
 		}
 	}
 }

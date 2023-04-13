@@ -21,12 +21,12 @@ import javax.annotation.Nonnull;
 @SuppressWarnings("unused")
 @Mixin(LivingEntityRenderer.class)
 public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
-	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getPose()Lnet/minecraft/world/entity/Pose;"))
-	private Pose st_renderLayOnBedVehicle(T instance) {
+	@Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hasPose(Lnet/minecraft/world/entity/Pose;)Z"))
+	private boolean st_renderLayOnBedVehicle(T instance, Pose pose) {
 		if (instance.getVehicle() instanceof IBedVehicle) {
-			return Pose.SLEEPING;
+			return Pose.SLEEPING == pose;
 		}
-		return instance.getPose();
+		return instance.getPose() == pose;
 	}
 
 	@Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", ordinal = 0, shift = At.Shift.AFTER))
@@ -47,12 +47,12 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 		}
 	}
 
-	@Redirect(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getPose()Lnet/minecraft/world/entity/Pose;"))
-	private Pose st_setupRotationsLayOnBedVehicle(T instance) {
+	@Redirect(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hasPose(Lnet/minecraft/world/entity/Pose;)Z"))
+	private boolean st_setupRotationsLayOnBedVehicle(T instance, Pose pose) {
 		if (instance.getVehicle() instanceof IBedVehicle) {
-			return Pose.SLEEPING;
+			return Pose.SLEEPING == pose;
 		}
-		return instance.getPose();
+		return instance.getPose() == pose;
 	}
 
 	@Inject(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getBedOrientation()Lnet/minecraft/core/Direction;", shift = At.Shift.AFTER))

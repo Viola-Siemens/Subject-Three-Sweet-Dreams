@@ -26,7 +26,7 @@ public class STBlocks {
 
 	public static class Technical {
 		private static final Supplier<BlockBehaviour.Properties> PROPERTIES = () ->
-				BlockBehaviour.Properties.of(Material.STRUCTURAL_AIR).noCollission().noDrops().instabreak();
+				BlockBehaviour.Properties.of(Material.STRUCTURAL_AIR).noCollission().noLootTable().instabreak();
 
 		public static final BlockEntry<Block> BLACK_BOAT_BED = new BlockEntry<>("black_boat_bed", PROPERTIES, Block::new);
 		public static final BlockEntry<Block> BLUE_BOAT_BED = new BlockEntry<>("blue_boat_bed", PROPERTIES, Block::new);

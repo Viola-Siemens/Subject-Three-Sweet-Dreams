@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
@@ -145,6 +146,11 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 	@Override
 	public ItemStack getPickResult() {
 		return new ItemStack(STItems.BedMinecarts.byColor(this.getBedColor()));
+	}
+
+	@Override @Nonnull
+	protected Item getDropItem() {
+		return STItems.BedMinecarts.byColor(this.getBedColor());
 	}
 
 	@Override

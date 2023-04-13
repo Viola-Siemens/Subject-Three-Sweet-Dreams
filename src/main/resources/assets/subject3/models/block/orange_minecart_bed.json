@@ -1,5 +1,6 @@
 {
   "parent": "subject3:block/template_minecart_bed",
+  "render_type": "cutout",
   "textures": {
     "texture_sheet": "minecraft:block/orange_wool"
   }

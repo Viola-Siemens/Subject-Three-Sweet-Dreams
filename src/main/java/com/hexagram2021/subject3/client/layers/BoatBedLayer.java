@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 
@@ -30,6 +30,7 @@ public class BoatBedLayer extends RenderLayer<BedBoatEntity, BedBoatModel> {
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	protected static void renderColoredCutoutModel(BedBoatModel model, BlockState technicalBlock, PoseStack transform, MultiBufferSource buffer, int uv2) {
 		transform.pushPose();
 		ModelPart modelPart = model.bottom;
@@ -37,7 +38,7 @@ public class BoatBedLayer extends RenderLayer<BedBoatEntity, BedBoatModel> {
 		transform.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
 		transform.mulPose(Vector3f.YP.rotationDegrees(90.0F));
 		transform.translate(-0.4375D, -0.5D, -0.5D);
-		Minecraft.getInstance().getBlockRenderer().renderSingleBlock(technicalBlock, transform, buffer, uv2, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+		Minecraft.getInstance().getBlockRenderer().renderSingleBlock(technicalBlock, transform, buffer, uv2, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
 		transform.popPose();
 	}
 }

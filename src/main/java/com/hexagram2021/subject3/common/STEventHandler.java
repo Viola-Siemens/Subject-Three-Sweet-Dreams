@@ -3,9 +3,8 @@ package com.hexagram2021.subject3.common;
 import com.hexagram2021.subject3.Subject3;
 import com.hexagram2021.subject3.common.entities.IBedVehicle;
 import com.hexagram2021.subject3.common.entities.IHasVehicleRespawnPosition;
-import net.minecraft.Util;
 import net.minecraft.core.SectionPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +27,7 @@ import static com.hexagram2021.subject3.Subject3.MODID;
 public class STEventHandler {
 	@SubscribeEvent
 	public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		if(player instanceof IHasVehicleRespawnPosition) {
 			UUID bedVehicleUUID = ((IHasVehicleRespawnPosition) player).getBedVehicleUUID();
 			if(bedVehicleUUID != null) {
@@ -56,14 +55,14 @@ public class STEventHandler {
 				} else {
 					((IHasVehicleRespawnPosition) player).setBedVehicleUUID(null);
 				}
-				player.sendMessage(new TranslatableComponent("message.subject3.bed_vehicle_occupied"), Util.NIL_UUID);
+				player.sendSystemMessage(Component.translatable("message.subject3.bed_vehicle_occupied"));
 			}
 		}
 	}
 
 	@SubscribeEvent
 	public static void onPlayerClone(PlayerEvent.Clone event) {
-		Player player = event.getPlayer();
+		Player player = event.getEntity();
 		Player original = event.getOriginal();
 		if(player instanceof IHasVehicleRespawnPosition && original instanceof IHasVehicleRespawnPosition) {
 			((IHasVehicleRespawnPosition)player).setBedVehicleUUID(((IHasVehicleRespawnPosition)original).getBedVehicleUUID());

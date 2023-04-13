@@ -13,7 +13,7 @@ import net.minecraftforge.registries.RegistryObject;
 import static com.hexagram2021.subject3.Subject3.MODID;
 
 public class STEntities {
-	private static final DeferredRegister<EntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.ENTITIES, MODID);
+	private static final DeferredRegister<EntityType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
 
 	public static final RegistryObject<EntityType<BedMinecartEntity>> BED_MINECART = REGISTER.register(
 			"bed_minecart", () ->
