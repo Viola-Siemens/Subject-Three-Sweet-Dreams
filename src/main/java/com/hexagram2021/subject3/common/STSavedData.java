@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class STSavedData extends SavedData {
+	@Nullable
 	private static STSavedData INSTANCE;
 	public static final String SAVED_DATA_NAME = "Subject3-SavedData";
 
@@ -63,6 +64,13 @@ public class STSavedData extends SavedData {
 		if(INSTANCE != null) {
 			ServerLevel level = server.overworld();
 			INSTANCE.bedVehicles.markAllRelatedChunks(level);
+			INSTANCE.bedVehicles.removeIllegalBedVehicles(level);
+		}
+	}
+
+	public static void removeIllegalBedVehicles(ServerLevel level) {
+		if(INSTANCE != null) {
+			INSTANCE.bedVehicles.removeIllegalBedVehicles(level);
 		}
 	}
 

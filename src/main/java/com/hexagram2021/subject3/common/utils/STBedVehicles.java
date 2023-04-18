@@ -1,6 +1,7 @@
 package com.hexagram2021.subject3.common.utils;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.storage.LevelData;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -37,6 +39,24 @@ public class STBedVehicles {
 		}
 	}
 
+	public void removeIllegalBedVehicles(ServerLevel level) {
+		synchronized (this.bedVehicles) {
+			synchronized (this.loadedChunkTickets) {
+				Set<UUID> toRemoves = Sets.newHashSet();
+				this.bedVehicles.forEach(((uuid, chunkPos) -> {
+					if(level.getEntity(uuid) == null) {
+						toRemoves.add(uuid);
+					}
+				}));
+				toRemoves.forEach(uuid -> {
+					ChunkPos chunkPos = this.bedVehicles.get(uuid);
+					this.updateUnforceChunkLoad(chunkPos, level);
+					this.bedVehicles.remove(uuid);
+				});
+			}
+		}
+	}
+
 	public ChunkPos addVehicleWithoutUpdate(UUID uuid, ChunkPos chunkPos) {
 		synchronized (this.bedVehicles) {
 			return this.bedVehicles.put(uuid, chunkPos);
@@ -51,7 +71,6 @@ public class STBedVehicles {
 
 	public void updateForceChunkLoad(ChunkPos chunkPos, ServerLevel level) {
 		if(!isChunkForced(level, chunkPos)) {
-			level.getChunkSource().updateChunkForced(chunkPos, true);
 			if(this.loadedChunkTickets.containsKey(chunkPos)) {
 				this.loadedChunkTickets.computeIntIfPresent(chunkPos, (cp, i) -> i + 1);
 			} else {

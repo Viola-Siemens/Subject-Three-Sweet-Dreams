@@ -15,6 +15,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -94,6 +95,15 @@ public class STEventHandler {
 						STSavedData.updateForceChunk(oldPos, serverlevel, false);
 					}
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onLevelSave(LevelEvent.Save event) {
+		if(event.getLevel() instanceof ServerLevel serverLevel) {
+			if(serverLevel.dimension().equals(Level.OVERWORLD)) {
+				STSavedData.removeIllegalBedVehicles(serverLevel);
 			}
 		}
 	}
