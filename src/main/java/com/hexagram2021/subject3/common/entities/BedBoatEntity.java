@@ -10,8 +10,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -102,6 +105,15 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 		if (nbt.contains("DyeColor", Tag.TAG_STRING)) {
 			this.setColor(DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE));
 		}
+	}
+
+	@Override @Nonnull
+	public InteractionResult interact(@Nonnull Player player, @Nonnull InteractionHand hand) {
+		InteractionResult ret = super.interact(player, hand);
+		if(ret == InteractionResult.CONSUME && player instanceof IHasVehicleRespawnPosition) {
+			((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);
+		}
+		return ret;
 	}
 
 	@Override
