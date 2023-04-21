@@ -12,6 +12,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,9 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -109,6 +112,18 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 
 	@Override @Nonnull
 	public InteractionResult interact(@Nonnull Player player, @Nonnull InteractionHand hand) {
+		if (!BedBlock.canSetSpawn(this.level)) {
+			if (this.level.isClientSide) {
+				return InteractionResult.SUCCESS;
+			}
+			this.level.explode(
+					this, DamageSource.badRespawnPointExplosion(), null,
+					this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D,
+					5.0F, true, Explosion.BlockInteraction.DESTROY
+			);
+			this.kill();
+			return InteractionResult.CONSUME;
+		}
 		InteractionResult ret = super.interact(player, hand);
 		if(ret == InteractionResult.CONSUME && player instanceof IHasVehicleRespawnPosition) {
 			((IHasVehicleRespawnPosition)player).setBedVehicleUUID(this.uuid);

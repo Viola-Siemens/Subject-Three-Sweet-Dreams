@@ -86,7 +86,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 						5.0F, true, Explosion.BlockInteraction.DESTROY
 				);
 				this.kill();
-				return InteractionResult.SUCCESS;
+				return InteractionResult.CONSUME;
 			}
 			if(player.startRiding(this)) {
 				ret = InteractionResult.CONSUME;
