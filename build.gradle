@@ -18,7 +18,7 @@ apply plugin: 'maven-publish'
 
 apply plugin: 'org.spongepowered.mixin'
 
-version = '4.3.0'
+version = '4.4.0'
 group = 'com.hexagram2021.subject3' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'subject3'
 
@@ -26,7 +26,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.19.3'
+    mappings channel: 'official', version: '1.19.4'
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -100,7 +100,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.1.0'
+    minecraft 'net.minecraftforge:forge:1.19.4-45.1.0'
 	
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

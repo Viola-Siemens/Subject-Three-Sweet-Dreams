@@ -82,7 +82,7 @@ public class BedMinecartEntity extends AbstractMinecart implements IBedVehicle {
 			if (!BedBlock.canSetSpawn(this.level)) {
 				Vec3 vec3 = new Vec3(this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D);
 				this.level.explode(
-						this, DamageSource.badRespawnPointExplosion(vec3), null,
+						this, this.damageSources().badRespawnPointExplosion(vec3), null,
 						vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK
 				);
 				this.kill();

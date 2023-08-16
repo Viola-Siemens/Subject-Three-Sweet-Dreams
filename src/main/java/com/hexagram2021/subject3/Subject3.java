@@ -58,7 +58,7 @@ public class Subject3 {
 		ITEM_GROUP = event.registerCreativeModeTab(new ResourceLocation(MODID, "item_group"), builder -> builder
 				.icon(() -> new ItemStack(STItems.BedBoats.byTypeAndColor(Boat.Type.OAK, DyeColor.RED)))
 				.title(Component.translatable("itemGroup.subject3")).displayItems(
-						(flags, output, hasPermission) -> STItems.ItemEntry.ALL_ITEMS.forEach(output::accept)
+						(flags, output) -> STItems.ItemEntry.ALL_ITEMS.forEach(output::accept)
 				)
 		);
 	}

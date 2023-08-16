@@ -13,7 +13,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -120,7 +119,7 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 			}
 			Vec3 vec3 = new Vec3(this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D);
 			this.level.explode(
-					this, DamageSource.badRespawnPointExplosion(vec3), null,
+					this, this.damageSources().badRespawnPointExplosion(vec3), null,
 					vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK
 			);
 			this.kill();

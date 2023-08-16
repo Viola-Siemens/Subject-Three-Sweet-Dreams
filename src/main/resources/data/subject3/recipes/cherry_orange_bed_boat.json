@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "bed_boat",
+  "ingredients": [
+    {
+      "item": "minecraft:orange_bed"
+    },
+    {
+      "item": "minecraft:cherry_boat"
+    }
+  ],
+  "result": {
+    "item": "subject3:cherry_orange_bed_boat"
+  }
+}
