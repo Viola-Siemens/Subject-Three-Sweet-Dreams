@@ -17,7 +17,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -33,8 +32,8 @@ public class BedBoatItem extends Item {
 		this.color = color;
 	}
 
-	@Override @Nonnull
-	public InteractionResultHolder<ItemStack> use(@Nonnull Level level, Player player, @Nonnull InteractionHand hand) {
+	@Override
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack itemstack = player.getItemInHand(hand);
 		HitResult hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
@@ -55,7 +54,7 @@ public class BedBoatItem extends Item {
 
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BedBoatEntity boatEntity = new BedBoatEntity(level, hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
-			boatEntity.setType(this.type);
+			boatEntity.setVariant(this.type);
 			boatEntity.setColor(this.color);
 			boatEntity.setYRot(player.getYRot());
 			if (!level.noCollision(boatEntity, boatEntity.getBoundingBox().inflate(-0.1D))) {

@@ -6,6 +6,7 @@ import com.hexagram2021.subject3.register.STItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -20,12 +21,10 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
-
-import javax.annotation.Nonnull;
 
 public class BedBoatEntity extends Boat implements IBedVehicle {
 	private static final EntityDataAccessor<Integer> DATA_ID_DYE_COLOR = SynchedEntityData.defineId(BedBoatEntity.class, EntityDataSerializers.INT);
@@ -48,7 +47,7 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 		this.entityData.set(DATA_ID_DYE_COLOR, color.ordinal());
 	}
 
-	@Override @Nonnull
+	@Override
 	public DyeColor getBedColor() {
 		return DyeColor.byId(this.entityData.get(DATA_ID_DYE_COLOR));
 	}
@@ -97,29 +96,29 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 	}
 
 	@Override
-	protected void addAdditionalSaveData(@Nonnull CompoundTag nbt) {
+	protected void addAdditionalSaveData(CompoundTag nbt) {
 		super.addAdditionalSaveData(nbt);
 		nbt.putString("DyeColor", this.getBedColor().getName());
 	}
 
 	@Override
-	protected void readAdditionalSaveData(@Nonnull CompoundTag nbt) {
+	protected void readAdditionalSaveData(CompoundTag nbt) {
 		super.readAdditionalSaveData(nbt);
 		if (nbt.contains("DyeColor", Tag.TAG_STRING)) {
 			this.setColor(DyeColor.byName(nbt.getString("DyeColor"), DyeColor.WHITE));
 		}
 	}
 
-	@Override @Nonnull
-	public InteractionResult interact(@Nonnull Player player, @Nonnull InteractionHand hand) {
+	@Override
+	public InteractionResult interact(Player player, InteractionHand hand) {
 		if (!BedBlock.canSetSpawn(this.level)) {
 			if (this.level.isClientSide) {
 				return InteractionResult.SUCCESS;
 			}
+			Vec3 vec3 = new Vec3(this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D);
 			this.level.explode(
-					this, DamageSource.badRespawnPointExplosion(), null,
-					this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D,
-					5.0F, true, Explosion.BlockInteraction.DESTROY
+					this, DamageSource.badRespawnPointExplosion(vec3), null,
+					vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK
 			);
 			this.kill();
 			return InteractionResult.CONSUME;
@@ -132,7 +131,7 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 	}
 
 	@Override
-	public void remove(@Nonnull Entity.RemovalReason reason) {
+	public void remove(Entity.RemovalReason reason) {
 		if (!this.level.isClientSide && reason.shouldDestroy()) {
 			ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
 			if(chunkPos != null && this.level instanceof ServerLevel) {
@@ -143,9 +142,9 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 		super.remove(reason);
 	}
 
-	@Override @Nonnull
+	@Override
 	public Item getDropItem() {
-		return STItems.BedBoats.byTypeAndColor(this.getBoatType(), this.getBedColor());
+		return STItems.BedBoats.byTypeAndColor(this.getVariant(), this.getBedColor());
 	}
 
 	@Override
@@ -153,8 +152,8 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 		return false;
 	}
 
-	@Override @Nonnull
-	public Packet<?> getAddEntityPacket() {
+	@Override
+	public Packet<ClientGamePacketListener> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 }

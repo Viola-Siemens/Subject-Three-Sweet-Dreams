@@ -11,8 +11,6 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
-import javax.annotation.Nonnull;
-
 public class BedBoatModel extends ListModel<BedBoatEntity> {
 	private final ModelPart leftPaddle;
 	private final ModelPart rightPaddle;
@@ -64,12 +62,12 @@ public class BedBoatModel extends ListModel<BedBoatEntity> {
 	}
 
 	@Override
-	public void setupAnim(@Nonnull BedBoatEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(BedBoatEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		animatePaddle(entity, 0, this.leftPaddle, limbSwing);
 		animatePaddle(entity, 1, this.rightPaddle, limbSwing);
 	}
 
-	@Override @Nonnull
+	@Override
 	public Iterable<ModelPart> parts() {
 		return this.parts;
 	}

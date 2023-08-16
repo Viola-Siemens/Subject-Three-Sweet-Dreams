@@ -4,8 +4,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 
-import javax.annotation.Nonnull;
-
 public interface IBedVehicle {
 	static BedBlock getBedBlock(DyeColor color) {
 		return switch (color) {
@@ -34,6 +32,5 @@ public interface IBedVehicle {
 	double getBedVehicleOffsetY();
 
 	void setColor(DyeColor color);
-	@Nonnull
 	DyeColor getBedColor();
 }

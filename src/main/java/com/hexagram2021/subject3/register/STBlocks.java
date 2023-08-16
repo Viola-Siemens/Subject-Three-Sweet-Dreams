@@ -14,7 +14,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -146,7 +145,6 @@ public class STBlocks {
 			return properties.get();
 		}
 
-		@Nonnull
 		@Override
 		public Item asItem()
 		{

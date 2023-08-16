@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.storage.LevelData;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -57,6 +58,7 @@ public class STBedVehicles {
 		}
 	}
 
+	@Nullable
 	public ChunkPos addVehicleWithoutUpdate(UUID uuid, ChunkPos chunkPos) {
 		synchronized (this.bedVehicles) {
 			return this.bedVehicles.put(uuid, chunkPos);

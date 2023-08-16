@@ -1,6 +1,6 @@
 package com.hexagram2021.subject3.register;
 
-import com.hexagram2021.subject3.Subject3;
+import com.google.common.collect.Lists;
 import com.hexagram2021.subject3.common.items.BedBoatItem;
 import com.hexagram2021.subject3.common.items.BedMinecartItem;
 import net.minecraft.Util;
@@ -14,7 +14,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -38,7 +38,7 @@ public class STItems {
 			for(Boat.Type type: Boat.Type.values()) {
 				for(DyeColor color: DyeColor.values()) {
 					BED_BOATS[type.ordinal()][color.ordinal()] = ItemEntry.register(
-							type.getName() + "_" + color.getName() + "_bed_boat", () -> new BedBoatItem(type, color, new Item.Properties().tab(Subject3.ITEM_GROUP).stacksTo(1))
+							type.getName() + "_" + color.getName() + "_bed_boat", () -> new BedBoatItem(type, color, new Item.Properties().stacksTo(1))
 					);
 				}
 			}
@@ -60,7 +60,7 @@ public class STItems {
 
 			for(DyeColor color: DyeColor.values()) {
 				BED_MINECARTS[color.ordinal()] = ItemEntry.register(
-						color.getName() + "_bed_minecart", () -> new BedMinecartItem(color, new Item.Properties().tab(Subject3.ITEM_GROUP).stacksTo(1))
+						color.getName() + "_bed_minecart", () -> new BedMinecartItem(color, new Item.Properties().stacksTo(1))
 				);
 			}
 		}
@@ -78,6 +78,8 @@ public class STItems {
 	public static class ItemEntry<T extends Item> implements Supplier<T>, ItemLike {
 		private final RegistryObject<T> regObject;
 
+		public static final List<ItemEntry<?>> ALL_ITEMS = Lists.newArrayList();
+
 		private static ItemEntry<Item> simple(String name, Consumer<Item.Properties> makeProps, Consumer<Item> processItem) {
 			return register(name, () -> Util.make(new Item(Util.make(new Item.Properties(), makeProps)), processItem));
 		}
@@ -88,15 +90,14 @@ public class STItems {
 
 		private ItemEntry(RegistryObject<T> regObject) {
 			this.regObject = regObject;
+			ALL_ITEMS.add(this);
 		}
 
 		@Override
-		@Nonnull
 		public T get() {
 			return this.regObject.get();
 		}
 
-		@Nonnull
 		@Override
 		public Item asItem() {
 			return this.regObject.get();

@@ -7,8 +7,7 @@ import com.hexagram2021.subject3.common.entities.BedBoatEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,8 +20,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.Boat;
+import org.joml.Quaternionf;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -50,10 +49,10 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 	}
 
 	@Override
-	public void render(BedBoatEntity bedBoatEntity, float y, float ticks, PoseStack transform, @Nonnull MultiBufferSource buffer, int h) {
+	public void render(BedBoatEntity bedBoatEntity, float y, float ticks, PoseStack transform, MultiBufferSource buffer, int h) {
 		transform.pushPose();
 		transform.translate(0.0D, 0.375D, 0.0D);
-		transform.mulPose(Vector3f.YP.rotationDegrees(180.0F - y));
+		transform.mulPose(Axis.YP.rotationDegrees(180.0F - y));
 		float f = (float)bedBoatEntity.getHurtTime() - ticks;
 		float f1 = bedBoatEntity.getDamage() - ticks;
 		if (f1 < 0.0F) {
@@ -61,19 +60,19 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		}
 
 		if (f > 0.0F) {
-			transform.mulPose(Vector3f.XP.rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * (float)bedBoatEntity.getHurtDir()));
+			transform.mulPose(Axis.XP.rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * (float)bedBoatEntity.getHurtDir()));
 		}
 
 		float f2 = bedBoatEntity.getBubbleAngle(ticks);
 		if (!Mth.equal(f2, 0.0F)) {
-			transform.mulPose(new Quaternion(new Vector3f(1.0F, 0.0F, 1.0F), bedBoatEntity.getBubbleAngle(ticks), true));
+			transform.mulPose(new Quaternionf().setAngleAxis(bedBoatEntity.getBubbleAngle(ticks) * ((float)Math.PI / 180F), 1.0F, 0.0F, 1.0F));
 		}
 
 		Pair<ResourceLocation, BedBoatModel> pair = this.getModelWithLocation(bedBoatEntity);
 		ResourceLocation resourcelocation = pair.getFirst();
 		BedBoatModel model = pair.getSecond();
 		transform.scale(-1.0F, -1.0F, 1.0F);
-		transform.mulPose(Vector3f.YP.rotationDegrees(90.0F));
+		transform.mulPose(Axis.YP.rotationDegrees(90.0F));
 		model.setupAnim(bedBoatEntity, ticks, 0.0F, -0.1F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = buffer.getBuffer(model.renderType(resourcelocation));
 		model.renderToBuffer(transform, vertexConsumer, h, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -88,14 +87,14 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		super.render(bedBoatEntity, y, ticks, transform, buffer, h);
 	}
 
-	public Pair<ResourceLocation, BedBoatModel> getModelWithLocation(@Nonnull BedBoatEntity boat) { return this.boatResources.get(boat.getBoatType()); }
+	public Pair<ResourceLocation, BedBoatModel> getModelWithLocation(BedBoatEntity boat) { return this.boatResources.get(boat.getVariant()); }
 
-	@Override @Nonnull
-	public ResourceLocation getTextureLocation(@Nonnull BedBoatEntity boat) {
+	@Override
+	public ResourceLocation getTextureLocation(BedBoatEntity boat) {
 		return this.getModelWithLocation(boat).getFirst();
 	}
 
-	@Override @Nonnull
+	@Override
 	public BedBoatModel getModel() {
 		return this.defaultModel;
 	}

@@ -2,7 +2,7 @@ package com.hexagram2021.subject3.mixin;
 
 import com.hexagram2021.subject3.common.entities.IBedVehicle;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nonnull;
-
 @SuppressWarnings("unused")
 @Mixin(LivingEntityRenderer.class)
 public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T>> {
@@ -29,8 +27,8 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 		return instance.getPose() == pose;
 	}
 
-	@Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(DDD)V", ordinal = 0, shift = At.Shift.AFTER))
-	public void st_renderLayHeightPosition(T entity, float y, float ticks, PoseStack transform, @Nonnull MultiBufferSource buffer, int h, CallbackInfo ci) {
+	@Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V", ordinal = 0, shift = At.Shift.AFTER))
+	public void st_renderLayHeightPosition(T entity, float y, float ticks, PoseStack transform, MultiBufferSource buffer, int h, CallbackInfo ci) {
 		if (entity.getVehicle() instanceof IBedVehicle) {
 			Vec3 direction = Vec3.directionFromRotation(0.0F, ((IBedVehicle)entity.getVehicle()).getBedVehicleRotY()).reverse();
 			double movement = -entity.getBbHeight() / 2.0D;
@@ -58,7 +56,7 @@ public class LivingRendererMixin<T extends LivingEntity, M extends EntityModel<T
 	@Inject(method = "setupRotations", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getBedOrientation()Lnet/minecraft/core/Direction;", shift = At.Shift.AFTER))
 	public void st_setupRotationsLayRotation(T entity, PoseStack transform, float bob, float bodyYRot, float ticks, CallbackInfo ci) {
 		if (entity.getVehicle() instanceof IBedVehicle) {
-			transform.mulPose(Vector3f.YP.rotationDegrees(270.0F - ((IBedVehicle)entity.getVehicle()).getBedVehicleRotY()));
+			transform.mulPose(Axis.YP.rotationDegrees(270.0F - ((IBedVehicle)entity.getVehicle()).getBedVehicleRotY()));
 		}
 	}
 }

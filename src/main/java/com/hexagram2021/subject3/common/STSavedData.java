@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
@@ -44,7 +43,7 @@ public class STSavedData extends SavedData {
 		}
 	}
 
-	@Override @Nonnull
+	@Override
 	public CompoundTag save(CompoundTag nbt) {
 		ListTag allBedVehicles = new ListTag();
 		synchronized (this.bedVehicles.bedVehicles) {

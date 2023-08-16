@@ -19,15 +19,13 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 
-import javax.annotation.Nonnull;
-
 public class BedMinecartItem extends MinecartItem {
 	private static final DispenseItemBehavior DISPENSE_BED_MINECART_BEHAVIOR = new DefaultDispenseItemBehavior() {
 		private final DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior();
 
 		@SuppressWarnings("deprecation")
-		@Override @Nonnull
-		public ItemStack execute(BlockSource blockSource, @Nonnull ItemStack itemStack) {
+		@Override
+		public ItemStack execute(BlockSource blockSource, ItemStack itemStack) {
 			Direction direction = blockSource.getBlockState().getValue(DispenserBlock.FACING);
 			Level level = blockSource.getLevel();
 			double x = blockSource.x() + direction.getStepX() * 1.125D;
@@ -82,7 +80,7 @@ public class BedMinecartItem extends MinecartItem {
 		DispenserBlock.registerBehavior(this, DISPENSE_BED_MINECART_BEHAVIOR);
 	}
 
-	@Override @Nonnull
+	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		Level world = context.getLevel();
 		BlockPos blockpos = context.getClickedPos();
