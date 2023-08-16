@@ -63,6 +63,9 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 	}
 	@Override
 	public double getBedVehicleOffsetY() {
+		if(this.getVariant() == Type.BAMBOO) {
+			return 0.75D;
+		}
 		return 0.875D;
 	}
 

@@ -35,12 +35,14 @@ public class BoatBedLayer {
 		transform.pushPose();
 		ModelPart modelPart = model.bottom;
 		modelPart.translateAndRotate(transform);
-		transform.mulPose(Axis.XP.rotationDegrees(-90.0F));
+		transform.mulPose(Axis.XP.rotationDegrees(90.0F));
 		transform.mulPose(Axis.YP.rotationDegrees(90.0F));
-		transform.translate(-0.4375D, -0.5D, -0.5D);
+		transform.translate(-0.0625D, 0.0D, 0.0D);
 		if(model instanceof BedRaftModel) {
 			transform.scale(0.9375F, 0.9375F, 0.9375F);
+			transform.translate(0.0D, -0.125D, 0.0D);
 		}
+		transform.translate(-0.5D, 0.0D, -0.5D);
 		Minecraft.getInstance().getBlockRenderer().renderSingleBlock(technicalBlock, transform, buffer, uv2, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
 		transform.popPose();
 	}
