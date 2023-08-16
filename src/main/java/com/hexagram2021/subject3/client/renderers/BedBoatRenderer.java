@@ -16,8 +16,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -27,10 +25,9 @@ import org.joml.Quaternionf;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements RenderLayerParent<BedBoatEntity, AbstractBedBoatModel> {
-	private final RenderLayer<BedBoatEntity, AbstractBedBoatModel> bedLayer;
+public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> {
+	private final BoatBedLayer bedLayer;
 	private final Map<Boat.Type, Pair<ResourceLocation, AbstractBedBoatModel>> boatResources;
-	private final AbstractBedBoatModel defaultModel;
 
 	public BedBoatRenderer(EntityRendererProvider.Context manager) {
 		super(manager);
@@ -51,7 +48,6 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 					);
 				}
 		));
-		this.defaultModel = new BedBoatModel(manager.bakeLayer(ClientEntityEventSubscriber.createBedBoatModelName(Boat.Type.OAK)));
 	}
 
 	@Override
@@ -89,7 +85,7 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 			}
 		}
 
-		this.bedLayer.render(transform, buffer, h, bedBoatEntity, 0.0F, 0.0F, ticks, 0.0F, 0.0F, Mth.lerp(ticks, bedBoatEntity.xRotO, bedBoatEntity.getXRot()));
+		this.bedLayer.render(transform, buffer, h, bedBoatEntity);
 
 		transform.popPose();
 		super.render(bedBoatEntity, y, ticks, transform, buffer, h);
@@ -102,8 +98,7 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		return this.getModelWithLocation(boat).getFirst();
 	}
 
-	@Override
-	public AbstractBedBoatModel getModel() {
-		return this.defaultModel;
+	public AbstractBedBoatModel getModel(BedBoatEntity boat) {
+		return this.boatResources.get(boat.getVariant()).getSecond();
 	}
 }
