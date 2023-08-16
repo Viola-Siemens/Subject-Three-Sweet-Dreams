@@ -1,6 +1,6 @@
 modLoader="javafml"
-loaderVersion="[41,)"
-license="GNU General Public License v3.0"
+loaderVersion="[44,)"
+license="GNU Affero General Public License v3.0"
 issueTrackerURL="https://github.com/Viola-Siemens/Subject-Three-Sweet-Dreams/issues"
 
 [[mods]]
@@ -19,12 +19,12 @@ With this mod, you can make bed boat and bed minecart to set a moving respawn po
 [[dependencies.subject3]]
     modId="forge"
     mandatory=true
-    versionRange="[41,)"
+    versionRange="[44,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.subject3]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.19.3,1.20)"
     ordering="NONE"
     side="BOTH"
