@@ -1,15 +1,17 @@
 package com.hexagram2021.subject3.client.renderers;
 
 import com.google.common.collect.ImmutableMap;
+import com.hexagram2021.subject3.client.ClientEntityEventSubscriber;
 import com.hexagram2021.subject3.client.layers.BoatBedLayer;
+import com.hexagram2021.subject3.client.models.AbstractBedBoatModel;
 import com.hexagram2021.subject3.client.models.BedBoatModel;
+import com.hexagram2021.subject3.client.models.BedRaftModel;
 import com.hexagram2021.subject3.common.entities.BedBoatEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.WaterPatchModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -25,14 +27,10 @@ import org.joml.Quaternionf;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.hexagram2021.subject3.Subject3.MODID;
-
-public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements RenderLayerParent<BedBoatEntity, BedBoatModel> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(MODID, "bed_boat"), "main");
-
-	private final RenderLayer<BedBoatEntity, BedBoatModel> bedLayer;
-	private final Map<Boat.Type, Pair<ResourceLocation, BedBoatModel>> boatResources;
-	private final BedBoatModel defaultModel;
+public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements RenderLayerParent<BedBoatEntity, AbstractBedBoatModel> {
+	private final RenderLayer<BedBoatEntity, AbstractBedBoatModel> bedLayer;
+	private final Map<Boat.Type, Pair<ResourceLocation, AbstractBedBoatModel>> boatResources;
+	private final AbstractBedBoatModel defaultModel;
 
 	public BedBoatRenderer(EntityRendererProvider.Context manager) {
 		super(manager);
@@ -40,12 +38,20 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		this.bedLayer = new BoatBedLayer(this);
 		this.boatResources = Stream.of(Boat.Type.values()).collect(ImmutableMap.toImmutableMap(
 				type -> type,
-				type -> Pair.of(
-						new ResourceLocation("textures/entity/boat/" + type.getName() + ".png"),
-						new BedBoatModel(manager.bakeLayer(ModelLayers.createBoatModelName(type)))
-				)
+				type -> {
+					if(type == Boat.Type.BAMBOO) {
+						return Pair.of(
+								new ResourceLocation("textures/entity/boat/" + type.getName() + ".png"),
+								new BedRaftModel(manager.bakeLayer(ClientEntityEventSubscriber.createBedBoatModelName(type)))
+						);
+					}
+					return Pair.of(
+							new ResourceLocation("textures/entity/boat/" + type.getName() + ".png"),
+							new BedBoatModel(manager.bakeLayer(ClientEntityEventSubscriber.createBedBoatModelName(type)))
+					);
+				}
 		));
-		this.defaultModel = new BedBoatModel(manager.bakeLayer(LAYER_LOCATION));
+		this.defaultModel = new BedBoatModel(manager.bakeLayer(ClientEntityEventSubscriber.createBedBoatModelName(Boat.Type.OAK)));
 	}
 
 	@Override
@@ -65,12 +71,12 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 
 		float f2 = bedBoatEntity.getBubbleAngle(ticks);
 		if (!Mth.equal(f2, 0.0F)) {
-			transform.mulPose(new Quaternionf().setAngleAxis(bedBoatEntity.getBubbleAngle(ticks) * ((float)Math.PI / 180F), 1.0F, 0.0F, 1.0F));
+			transform.mulPose(new Quaternionf().setAngleAxis(bedBoatEntity.getBubbleAngle(ticks) * (Mth.PI / 180F), 1.0F, 0.0F, 1.0F));
 		}
 
-		Pair<ResourceLocation, BedBoatModel> pair = this.getModelWithLocation(bedBoatEntity);
+		Pair<ResourceLocation, AbstractBedBoatModel> pair = this.getModelWithLocation(bedBoatEntity);
 		ResourceLocation resourcelocation = pair.getFirst();
-		BedBoatModel model = pair.getSecond();
+		AbstractBedBoatModel model = pair.getSecond();
 		transform.scale(-1.0F, -1.0F, 1.0F);
 		transform.mulPose(Axis.YP.rotationDegrees(90.0F));
 		model.setupAnim(bedBoatEntity, ticks, 0.0F, -0.1F, 0.0F, 0.0F);
@@ -78,7 +84,9 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		model.renderToBuffer(transform, vertexConsumer, h, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 		if (!bedBoatEntity.isUnderWater()) {
 			VertexConsumer builder = buffer.getBuffer(RenderType.waterMask());
-			model.waterPatch().render(transform, builder, h, OverlayTexture.NO_OVERLAY);
+			if (model instanceof WaterPatchModel waterPatchModel) {
+				waterPatchModel.waterPatch().render(transform, builder, h, OverlayTexture.NO_OVERLAY);
+			}
 		}
 
 		this.bedLayer.render(transform, buffer, h, bedBoatEntity, 0.0F, 0.0F, ticks, 0.0F, 0.0F, Mth.lerp(ticks, bedBoatEntity.xRotO, bedBoatEntity.getXRot()));
@@ -87,7 +95,7 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 		super.render(bedBoatEntity, y, ticks, transform, buffer, h);
 	}
 
-	public Pair<ResourceLocation, BedBoatModel> getModelWithLocation(BedBoatEntity boat) { return this.boatResources.get(boat.getVariant()); }
+	public Pair<ResourceLocation, AbstractBedBoatModel> getModelWithLocation(BedBoatEntity boat) { return this.boatResources.get(boat.getVariant()); }
 
 	@Override
 	public ResourceLocation getTextureLocation(BedBoatEntity boat) {
@@ -95,7 +103,7 @@ public class BedBoatRenderer extends EntityRenderer<BedBoatEntity> implements Re
 	}
 
 	@Override
-	public BedBoatModel getModel() {
+	public AbstractBedBoatModel getModel() {
 		return this.defaultModel;
 	}
 }

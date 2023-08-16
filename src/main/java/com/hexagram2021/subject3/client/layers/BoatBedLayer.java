@@ -1,6 +1,6 @@
 package com.hexagram2021.subject3.client.layers;
 
-import com.hexagram2021.subject3.client.models.BedBoatModel;
+import com.hexagram2021.subject3.client.models.AbstractBedBoatModel;
 import com.hexagram2021.subject3.common.entities.BedBoatEntity;
 import com.hexagram2021.subject3.register.STBlocks;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,8 +17,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.data.ModelData;
 
 @OnlyIn(Dist.CLIENT)
-public class BoatBedLayer extends RenderLayer<BedBoatEntity, BedBoatModel> {
-	public BoatBedLayer(RenderLayerParent<BedBoatEntity, BedBoatModel> renderer) {
+public class BoatBedLayer extends RenderLayer<BedBoatEntity, AbstractBedBoatModel> {
+	public BoatBedLayer(RenderLayerParent<BedBoatEntity, AbstractBedBoatModel> renderer) {
 		super(renderer);
 	}
 
@@ -29,7 +29,7 @@ public class BoatBedLayer extends RenderLayer<BedBoatEntity, BedBoatModel> {
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	protected static void renderColoredCutoutModel(BedBoatModel model, BlockState technicalBlock, PoseStack transform, MultiBufferSource buffer, int uv2) {
+	protected static void renderColoredCutoutModel(AbstractBedBoatModel model, BlockState technicalBlock, PoseStack transform, MultiBufferSource buffer, int uv2) {
 		transform.pushPose();
 		ModelPart modelPart = model.bottom;
 		modelPart.translateAndRotate(transform);
