@@ -32,13 +32,13 @@ public class STEventHandler {
 		if(player instanceof IHasVehicleRespawnPosition) {
 			UUID bedVehicleUUID = ((IHasVehicleRespawnPosition) player).getBedVehicleUUID();
 			if(bedVehicleUUID != null) {
-				Entity bedVehicle = ((ServerLevel) player.level).getEntity(bedVehicleUUID);
+				Entity bedVehicle = ((ServerLevel) player.level()).getEntity(bedVehicleUUID);
 				if (bedVehicle instanceof IBedVehicle) {
 					if (((IBedVehicle) bedVehicle).passengersCount() == 0) {
-						if(player.level == bedVehicle.level) {
+						if(player.level() == bedVehicle.level()) {
 							player.setPos(bedVehicle.getX(), bedVehicle.getY(), bedVehicle.getZ());
 						} else {
-							player.changeDimension((ServerLevel) player.level, new ITeleporter() {
+							player.changeDimension((ServerLevel) player.level(), new ITeleporter() {
 								@Override
 								public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
 									return repositionEntity.apply(false);
@@ -73,7 +73,7 @@ public class STEventHandler {
 	@SubscribeEvent
 	public static void onEntityEnterChunk(EntityEvent.EnteringSection event) {
 		if(event.getEntity() instanceof IBedVehicle) {
-			Level level = event.getEntity().level;
+			Level level = event.getEntity().level();
 			if(level instanceof ServerLevel serverlevel) {
 				if (level.dimension().equals(ServerLevel.OVERWORLD)) {
 					SectionPos sectionPos = event.getNewPos();

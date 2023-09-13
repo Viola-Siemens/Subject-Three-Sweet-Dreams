@@ -72,7 +72,7 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 	public void setPos(double x, double y, double z) {
 		super.setPos(x, y, z);
 
-		if(this.level instanceof ServerLevel serverlevel) {
+		if(this.level() instanceof ServerLevel serverlevel) {
 			if (serverlevel.dimension().equals(ServerLevel.OVERWORLD)) {
 				ChunkPos newPos = new ChunkPos(this.blockPosition());
 				ChunkPos oldPos = STSavedData.addBedVehicle(this.uuid, newPos);
@@ -113,12 +113,12 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 
 	@Override
 	public InteractionResult interact(Player player, InteractionHand hand) {
-		if (!BedBlock.canSetSpawn(this.level)) {
-			if (this.level.isClientSide) {
+		if (!BedBlock.canSetSpawn(this.level())) {
+			if (this.level().isClientSide) {
 				return InteractionResult.SUCCESS;
 			}
 			Vec3 vec3 = new Vec3(this.getX() + 0.5D, this.getY() + 0.125D, this.getZ() + 0.5D);
-			this.level.explode(
+			this.level().explode(
 					this, this.damageSources().badRespawnPointExplosion(vec3), null,
 					vec3, 5.0F, true, Level.ExplosionInteraction.BLOCK
 			);
@@ -134,10 +134,10 @@ public class BedBoatEntity extends Boat implements IBedVehicle {
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
-		if (!this.level.isClientSide && reason.shouldDestroy()) {
+		if (!this.level().isClientSide && reason.shouldDestroy()) {
 			ChunkPos chunkPos = STSavedData.removeBedVehicle(this.uuid);
-			if(chunkPos != null && this.level instanceof ServerLevel) {
-				STSavedData.updateForceChunk(chunkPos, (ServerLevel)this.level, false);
+			if(chunkPos != null && this.level() instanceof ServerLevel) {
+				STSavedData.updateForceChunk(chunkPos, (ServerLevel)this.level(), false);
 			}
 		}
 
