@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "subject3:item/light_gray_bed",
-    "layer1": "subject3:item/birch_bed_boat"
-  }
-}
