@@ -205,6 +205,7 @@ public class STEventHandler {
     @SuppressWarnings("rawtypes")
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
+            IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);     
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
