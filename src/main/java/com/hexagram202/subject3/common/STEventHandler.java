@@ -206,6 +206,10 @@ public class STEventHandler {
     @SuppressWarnings("rawtypes")
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
+            if (event.getEntity() instanceof EntityPlayer) {
+                EntityPlayer player = ((EntityPlayer)event.getEntity());
+                player.sleeping = false;
+            }
             GlStateManager.popMatrix();
         }
     }
