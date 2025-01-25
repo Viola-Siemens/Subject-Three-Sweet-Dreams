@@ -195,7 +195,7 @@ public class STEventHandler {
                 GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, - 1, 0);
                 GlStateManager.rotate(270, 0, - 1, 0);
             }
-            GlStateManager.translate(3/8, 1/4 , 0);
+            GlStateManager.translate(0, -1/4 , 3/8);
             GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, - 1, 0);
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
@@ -210,7 +210,7 @@ public class STEventHandler {
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);     
             GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, 1, 0);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
-            GlStateManager.translate(8/3, 4/1 , 0);
+            GlStateManager.translate(0, 1/4 , 3/8);
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
                 player.sleeping = false; // close the sleep GUI
