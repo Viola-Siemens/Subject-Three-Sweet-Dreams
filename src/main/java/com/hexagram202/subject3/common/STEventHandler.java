@@ -183,32 +183,29 @@ public class STEventHandler {
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
+    @SuppressWarnings("rawtypes")
     public static void preEntityRender(RenderLivingEvent.Pre event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
             GlStateManager.pushMatrix();
             if (event.getEntity() instanceof EntityPlayer) {
-                
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
                 player.sleeping = true;
                 player.updateSize();
-                player.sleeping = false;
+                GlStateManager.translate(- player.renderOffsetX, - player.renderOffsetY, - player.renderOffsetZ);
+                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0.0F, - 1.0F, 0.0F);
+                GlStateManager.rotate(90.0F, 0.0F, 0.0F, - 1.0F);
+                GlStateManager.rotate(270.0F, 0.0F, - 1.0F, 0.0F);
             }
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
-            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 1, 0, 0);
+            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
         }
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
+    @SuppressWarnings("rawtypes")
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
-            IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
-            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), -1, 0, 0);
-            if (event.getEntity() instanceof EntityPlayer) {
-                EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.updateSize();
-                GlStateManager.translate(player.renderOffsetX, player.renderOffsetY, player.renderOffsetZ);
-            }
             GlStateManager.popMatrix();
         }
     }
