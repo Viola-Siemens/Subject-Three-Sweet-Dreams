@@ -189,12 +189,11 @@ public class STEventHandler {
             GlStateManager.pushMatrix();
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.sleeping = true;
+                player.sleeping = true; // Use the sleeps
                 player.updateSize();
                 GlStateManager.translate(- player.renderOffsetX, - player.renderOffsetY, - player.renderOffsetZ);
-                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0.0F, - 1.0F, 0.0F);
-                GlStateManager.rotate(90.0F, 0.0F, 0.0F, - 1.0F);
-                GlStateManager.rotate(270.0F, 0.0F, - 1.0F, 0.0F);
+                GlStateManager.rotate(player.getBedOrientationInDegrees() - player.getRidingEntity().yaw, 0, - 1, 0);
+                GlStateManager.rotate(270, 0, - 1, 0);
             }
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
@@ -208,7 +207,7 @@ public class STEventHandler {
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.sleeping = false;
+                player.sleeping = false; // close the sleep GUI
             }
             GlStateManager.popMatrix();
         }
