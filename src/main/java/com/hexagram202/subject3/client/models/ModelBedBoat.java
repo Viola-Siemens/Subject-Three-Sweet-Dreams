@@ -15,13 +15,13 @@ public class ModelBedBoat extends ModelBoat{
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.875f, 0.875f, 0.875f);
         GlStateManager.rotate(180f, 1, 0, -1);
-        GlStateManager.translate(0, 1/8f, -6/8);
+        GlStateManager.translate(0, 1/8f, 10);
 
         LayerBed.renderBed(((EntityBedBoat)p_78088_1_).getDataColor());
 
         GlStateManager.scale(1/ 0.875f, 1/ 0.875f, 1/ 0.875f);
         GlStateManager.rotate(180f, -1, 0, 1);
-        GlStateManager.translate(0, -1/8f, 6/8);
+        GlStateManager.translate(0, -1/8f, -10);
 
         GlStateManager.popMatrix();
     }

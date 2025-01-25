@@ -192,9 +192,11 @@ public class STEventHandler {
                 player.sleeping = true; // Use the sleeps
                 player.updateSize();
                 GlStateManager.translate(- player.renderOffsetX, - player.renderOffsetY, - player.renderOffsetZ);
-                GlStateManager.rotate(player.getBedOrientationInDegrees() - player.getRidingEntity().rotationYaw, 0, - 1, 0);
+                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, - 1, 0);
                 GlStateManager.rotate(270, 0, - 1, 0);
             }
+            GlStateManager.translate(3/8, 1/4 , 0);
+            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, - 1, 0);
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
         }
@@ -206,13 +208,15 @@ public class STEventHandler {
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);     
+            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, 1, 0);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
+            GlStateManager.translate(8/3, 4/1 , 0);
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
                 player.sleeping = false; // close the sleep GUI
                 player.updateSize();
                 GlStateManager.rotate(270, 0, 1, 0);
-                GlStateManager.rotate(player.getBedOrientationInDegrees() - player.getRidingEntity().rotationYaw, 0, 1, 0);
+                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, 1, 0);
                 GlStateManager.translate(player.renderOffsetX, player.renderOffsetY, player.renderOffsetZ);
             }
             GlStateManager.popMatrix();
