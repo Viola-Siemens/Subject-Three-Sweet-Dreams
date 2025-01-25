@@ -205,9 +205,14 @@ public class STEventHandler {
     @SuppressWarnings("rawtypes")
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
+            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
                 player.sleeping = false; // close the sleep GUI
+                player.updateSize();
+                GlStateManager.rotate(270, 0, 1, 0);
+                GlStateManager.rotate(player.getBedOrientationInDegrees() - player.getRidingEntity().yaw, 0, 1, 0);
+                GlStateManager.translate(player.renderOffsetX, player.renderOffsetY, player.renderOffsetZ);
             }
             GlStateManager.popMatrix();
         }
