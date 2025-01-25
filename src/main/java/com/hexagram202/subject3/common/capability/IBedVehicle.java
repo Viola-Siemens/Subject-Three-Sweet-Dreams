@@ -17,7 +17,7 @@ public interface IBedVehicle{
         return new ItemStack(Items.BED, 1, color.getMetadata());
     }
     default float getBedVehicleRotY(){
-        return 0;
+        return 270;
     }
 
     default void onEntityStartToRide(Entity entity){
@@ -30,11 +30,6 @@ public interface IBedVehicle{
     class Implementation implements IBedVehicle
     {
         private EnumDyeColor color = EnumDyeColor.WHITE;
-
-        @Override
-        public float getBedVehicleRotY() {
-            return 90f;
-        }
 
         @Override
         public void setBedColor(EnumDyeColor color) {
