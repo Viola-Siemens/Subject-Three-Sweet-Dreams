@@ -1,6 +1,7 @@
 package com.hexagram202.subject3.common;
 
 import com.hexagram202.subject3.Subject3;
+import com.hexagram202.subject3.client.models.TestLoggingLevel;
 import com.hexagram202.subject3.client.renderer.RenderBedBoat;
 import com.hexagram202.subject3.client.renderer.RenderBedMinecart;
 import com.hexagram202.subject3.common.capability.Subject3Capabilities;
@@ -181,6 +182,13 @@ public class STEventHandler {
        STBedVehiclesChunkHandler.clearWhenClientLoggedOut();
     }
 
+    public static final TestLoggingLevel rotateX = new TestLoggingLevel("PlayerRotateX");
+    public static final TestLoggingLevel rotateY = new TestLoggingLevel("PlayerRotateY");
+    public static final TestLoggingLevel rotateZ = new TestLoggingLevel("PlayerRotateZ");
+    public static final TestLoggingLevel levelX = new TestLoggingLevel("PlayerXLevel");
+    public static final TestLoggingLevel levelY = new TestLoggingLevel("PlayerYLevel");
+    public static final TestLoggingLevel levelZ = new TestLoggingLevel("PlayerZLevel");
+
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     @SuppressWarnings("rawtypes")
@@ -195,7 +203,10 @@ public class STEventHandler {
                 GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, - 1, 0);
                 GlStateManager.rotate(270, 0, - 1, 0);
             }
-            GlStateManager.translate(0, -1/4 , 3/8);
+            GlStateManager.rotate(180, 1, 0, 0);
+
+            GlStateManager.translate(levelX.getValue(event.getEntity().ticksExisted % 10 == 0, 2), levelY.getValue(event.getEntity().ticksExisted % 10 == 0, 2), levelZ.getValue(event.getEntity().ticksExisted % 10 == 0, 2));
+            //GlStateManager.rotate(rotateX.getValue(event.getEntity().ticksExisted % 10 == 0, 4), rotateX.getValue(event.getEntity().ticksExisted % 10 == 0, 2), levelZ.getValue(event.getEntity().ticksExisted % 10 == 0, 2));
             GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, - 1, 0);
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
             GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
@@ -208,17 +219,17 @@ public class STEventHandler {
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
             IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);     
-            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, 1, 0);
-            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
-            GlStateManager.translate(0, 1/4 , 3/8);
-            if (event.getEntity() instanceof EntityPlayer) {
-                EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.sleeping = false; // close the sleep GUI
-                player.updateSize();
-                GlStateManager.rotate(270, 0, 1, 0);
-                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, 1, 0);
-                GlStateManager.translate(player.renderOffsetX, player.renderOffsetY, player.renderOffsetZ);
-            }
+//            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, 1, 0);
+//            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
+//            GlStateManager.translate(0, 1/4 , 3/8);
+//            if (event.getEntity() instanceof EntityPlayer) {
+//                EntityPlayer player = ((EntityPlayer)event.getEntity());
+//                player.sleeping = false; // close the sleep GUI
+//                player.updateSize();
+//                GlStateManager.rotate(270, 0, 1, 0);
+//                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, 1, 0);
+//                GlStateManager.translate(player.renderOffsetX, player.renderOffsetY, player.renderOffsetZ);
+//            }
             GlStateManager.popMatrix();
         }
     }
