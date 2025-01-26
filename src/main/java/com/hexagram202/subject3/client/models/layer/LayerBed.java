@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 public class LayerBed{
     public static void renderBed(EnumDyeColor color){
         GlStateManager.pushMatrix();
-        Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(Items.BED, 1,  color.getMetadata()), ItemCameraTransforms.TransformType.FIXED);
+        Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(Items.BED, 1,  color.getMetadata()), ItemCameraTransforms.TransformType.NONE);
         GlStateManager.popMatrix();
     }
 }
