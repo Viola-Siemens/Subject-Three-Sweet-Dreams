@@ -15,7 +15,7 @@ public class ModelBedBoat extends ModelBoat{
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.875f, 0.875f, 0.875f);
         GlStateManager.rotate(180f, 1, 0, -1);
-        GlStateManager.translate(0, 1/8f, 5/8);
+        GlStateManager.translate(0, 1/8f, 9/16d);
 
         LayerBed.renderBed(((EntityBedBoat)p_78088_1_).getDataColor());
 

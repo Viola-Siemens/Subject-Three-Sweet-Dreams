@@ -76,7 +76,7 @@ public class EntityBedBoat extends EntityBoat implements IBedVehicle {
 
     @Override
     public float getBedVehicleRotY() {
-        return 0;
+        return 270 ;
     }
 
     @Override

@@ -81,7 +81,7 @@ public class EntityBedMinecart extends EntityMinecartEmpty implements IBedVehicl
 
     @Override
     public float getBedVehicleRotY() {
-        return 90.0f;
+        return -270f;
     }
 
     @Override

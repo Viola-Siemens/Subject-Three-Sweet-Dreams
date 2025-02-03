@@ -13,9 +13,9 @@ public class ModelBedMinecart extends ModelMinecart{
         super.render(p_78088_1_, p_78088_2_, p_78088_3_, p_78088_4_, p_78088_5_, p_78088_6_, p_78088_7_);
         GlStateManager.pushMatrix();
 
-        GlStateManager.scale(5/8, 5/8, 5/8);
+        GlStateManager.scale(9/16d, 9/16d, 9/16d);
         GlStateManager.rotate(180f, 1, 0, -1);
-        GlStateManager.translate(0, -1/8f, -3/4f);
+        GlStateManager.translate(0, -1/8, 2/4d);
         
         LayerBed.renderBed(((EntityBedMinecart)p_78088_1_).getDataColor());
 
