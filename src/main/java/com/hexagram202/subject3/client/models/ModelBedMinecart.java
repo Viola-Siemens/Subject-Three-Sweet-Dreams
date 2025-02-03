@@ -2,11 +2,16 @@ package com.hexagram202.subject3.client.models;
 
 import com.hexagram202.subject3.client.models.layer.LayerBed;
 import com.hexagram202.subject3.common.entities.EntityBedMinecart;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.model.ModelMinecart;
 import net.minecraft.entity.Entity;
 
 import net.minecraft.client.renderer.GlStateManager;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class ModelBedMinecart extends ModelMinecart{
     @Override
     public void render(Entity p_78088_1_, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float p_78088_7_) {

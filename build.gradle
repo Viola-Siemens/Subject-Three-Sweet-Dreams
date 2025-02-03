@@ -10,6 +10,7 @@ buildscript {
 }
 
 apply plugin: "net.minecraftforge.gradle.forge"
+apply from: "runmanager.gradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 version = project.mod_version
@@ -57,20 +58,5 @@ processResources {
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude "mcmod.info"
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-
-// Example for how to get properties into the manifest for reading by the runtime..
-jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes([
-                'FMLAT': 'subject3_at.cfg'
-        ])
     }
 }

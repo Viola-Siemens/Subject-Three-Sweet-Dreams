@@ -1,12 +1,13 @@
 package com.hexagram202.subject3.common.entities;
 
+import com.hexagram202.subject3.Subject3;
 import com.hexagram202.subject3.common.capability.IBedVehicle;
 import com.hexagram202.subject3.common.capability.Subject3Capabilities;
 import com.hexagram202.subject3.common.item.ItemBed;
 import com.hexagram202.subject3.common.item.ItemBedMinecart;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.item.EntityMinecartEmpty;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -25,9 +26,12 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class EntityBedMinecart extends EntityMinecartEmpty implements IBedVehicle {
-    public static final Type BED = EnumHelper.addEnum(Type.class, "subject3_bed", new Class[]{int.class, String.class}, new Object[]{12, "MinecartBed"}); // magic id ?
+    public static final Type BED = EnumHelper.addEnum(Type.class, "subject3_bed", new Class[]{int.class, String.class}, 12, "MinecartBed"); // magic id ?
 
     private static final DataParameter<Integer> DATA_COLOR = EntityDataManager.createKey(EntityBedMinecart.class, DataSerializers.VARINT);
 
@@ -98,7 +102,7 @@ public class EntityBedMinecart extends EntityMinecartEmpty implements IBedVehicl
     public void killMinecart(DamageSource p_94095_1_) {
         super.killMinecart(p_94095_1_);
         if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-            this.entityDropItem(new ItemStack(Items.BED, 1, this.dataManager.get(DATA_COLOR)), 0f);
+            this.entityDropItem(getBed(), 0f);
         }
     }
 
@@ -118,6 +122,10 @@ public class EntityBedMinecart extends EntityMinecartEmpty implements IBedVehicl
         return false;
     }
 
+    @Override
+    public ItemStack getCartItem() {
+        return Subject3.createItem(this);
+    }
 
     @Override
     public boolean hasCapability(Capability<?> p_hasCapability_1_, @Nullable EnumFacing p_hasCapability_2_) {

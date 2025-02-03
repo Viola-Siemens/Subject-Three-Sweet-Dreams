@@ -5,6 +5,7 @@ import com.hexagram202.subject3.common.capability.Subject3Capabilities;
 import com.hexagram202.subject3.common.item.ItemBed;
 import com.hexagram202.subject3.common.item.ItemBedBoat;
 import com.hexagram202.subject3.common.utils.Pair;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
@@ -26,7 +27,10 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class EntityBedBoat extends EntityBoat implements IBedVehicle {
 
     private static final DataParameter<Integer> DATA_COLOR = EntityDataManager.createKey(EntityBedBoat.class, DataSerializers.VARINT);
@@ -83,7 +87,7 @@ public class EntityBedBoat extends EntityBoat implements IBedVehicle {
     public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_) {
         if (super.attackEntityFrom(p_70097_1_, p_70097_2_)) {
             if (this.isDead && this.world.getGameRules().getBoolean("doEntityDrops")) {
-                this.entityDropItem(new ItemStack(Items.BED, 1, this.dataManager.get(DATA_COLOR)), 0f);
+                this.entityDropItem(getBed(), 0f);
             }
             return true;
         } else return false;

@@ -3,17 +3,17 @@ package com.hexagram202.subject3.common.utils;
 import com.hexagram202.subject3.Subject3;
 import com.hexagram202.subject3.common.capability.Subject3Capabilities;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
-
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class STBedVehiclesChunkHandler {
 
     static {

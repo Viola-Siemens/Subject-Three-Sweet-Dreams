@@ -1,6 +1,9 @@
 package com.hexagram202.subject3.common.capability;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -10,6 +13,8 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public interface IHasVehicleRespawnPosition{
     @Nullable
     UUID getBedVehicleUUID();
@@ -54,8 +59,8 @@ public interface IHasVehicleRespawnPosition{
 
     class ProviderPlayer implements ICapabilitySerializable<NBTTagCompound>
     {
-        private IHasVehicleRespawnPosition position = new Implementation();
-        private Capability.IStorage<IHasVehicleRespawnPosition> storage = Subject3Capabilities.HAS_VEHICLE_RESPAWN_POSITION.getStorage();
+        private final IHasVehicleRespawnPosition position = new Implementation();
+        private final Capability.IStorage<IHasVehicleRespawnPosition> storage = Subject3Capabilities.HAS_VEHICLE_RESPAWN_POSITION.getStorage();
 
         @Override
         public boolean hasCapability(Capability<?> capability, EnumFacing facing)

@@ -7,7 +7,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -42,7 +41,7 @@ public class ItemBedMinecart extends ItemBed{
         } else {
             ItemStack itemstack = player.getHeldItem(hand);
             if (!world.isRemote) {
-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, pos, iblockstate, (EntityMinecart)null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = iblockstate.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, pos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
                 double d0 = 0.0F;
                 if (blockrailbase$enumraildirection.isAscending()) {
                     d0 = 0.5F;
@@ -91,4 +90,5 @@ public class ItemBedMinecart extends ItemBed{
             }
         }
     }
+
 }

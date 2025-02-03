@@ -1,5 +1,6 @@
 package com.hexagram202.subject3.common.utils;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -8,9 +9,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.WorldServer;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class Teleport extends Teleporter {
     private final WorldServer worldServer;
-    private double x,y,z;
+    private final double x;
+    private final double y;
+    private final double z;
 
     public Teleport(Entity entity) {
         this((WorldServer) entity.world, entity.posX, entity.posY, entity.posZ);

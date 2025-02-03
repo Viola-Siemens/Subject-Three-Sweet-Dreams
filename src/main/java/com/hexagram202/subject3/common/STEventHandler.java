@@ -16,6 +16,7 @@ import com.hexagram202.subject3.common.recipe.DyeBedBoatRecipe;
 import com.hexagram202.subject3.common.recipe.DyeBedMinecartRecipe;
 import com.hexagram202.subject3.common.utils.STBedVehiclesChunkHandler;
 import com.hexagram202.subject3.common.utils.Teleport;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
@@ -25,9 +26,7 @@ import net.minecraft.item.*;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -35,7 +34,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -46,8 +44,11 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 @Mod.EventBusSubscriber
 public class STEventHandler {
 
@@ -100,7 +101,7 @@ public class STEventHandler {
     public static void registerModels(ModelRegistryEvent event){
         for (EnumDyeColor color : EnumDyeColor.values()){
             for (EntityBoat.Type type : EntityBoat.Type.values()) {
-                ModelLoader.setCustomModelResourceLocation(Subject3.ITEM_BED, ItemBedBoat.makeData(type, color),
+                ModelLoader.setCustomModelResourceLocation(Subject3.ITEM_BOAT, ItemBedBoat.makeData(type, color),
                         new ModelResourceLocation(new ResourceLocation("subject3", type.getName() + '_' + color.getName() + "_bed_boat"), "inventory"));
             }
             ModelLoader.setCustomModelResourceLocation(Subject3.ITEM_MINECART, ItemBedMinecart.makeData(color),
@@ -183,51 +184,29 @@ public class STEventHandler {
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("all")
     public static void preEntityRender(RenderLivingEvent.Pre event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
             Entity vehicle  = event.getEntity().getRidingEntity();
-            IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
+            IBedVehicle bedVehicle = vehicle.getCapability(Subject3Capabilities.BED_VEHICLE, null);
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(event.getX(), event.getY(), event.getZ());
-            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0, - 1, 0);
-            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, 1, 0);
-            if (event.getEntity() instanceof EntityPlayer) {
-                EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.sleeping = true; // Use the sleeps
-                player.updateSize();
-                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, - 1, 0);
-                GlStateManager.translate(0,0.65d, 0);
-            } else {
-                GlStateManager.rotate(90, 0, 0, 1);
-                GlStateManager.translate(0.45d,0, 0);
-            }
-            GlStateManager.translate(0.75d,vehicle.getEyeHeight() + vehicle.getYOffset(), 0);
+            bedVehicle.preEntityRender(event, event.getEntity(), vehicle, bedVehicle);
             GlStateManager.translate(- event.getX(), - event.getY(), - event.getZ());
-
         }
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("all")
     public static void postEntityRender(RenderLivingEvent.Post event){
         if (event.getEntity().isRiding() && event.getEntity().getRidingEntity().hasCapability(Subject3Capabilities.BED_VEHICLE, null)) {
-            Entity vehicle  = event.getEntity().getRidingEntity();
-            IBedVehicle bedVehicle = event.getEntity().getRidingEntity().getCapability(Subject3Capabilities.BED_VEHICLE, null);
-
-            GlStateManager.rotate(event.getEntity().getRidingEntity().rotationYaw, 0,  1, 0);
-            GlStateManager.rotate(bedVehicle.getBedVehicleRotY(), 0, - 1, 0);
             if (event.getEntity() instanceof EntityPlayer) {
                 EntityPlayer player = ((EntityPlayer)event.getEntity());
-                player.sleeping = false;
+                player.sleeping = false; // Use the sleeps
                 player.updateSize();
-                GlStateManager.rotate(player.getBedOrientationInDegrees(), 0, 1, 0);
-                GlStateManager.translate(0, - (0.65d), 0);
             }
-            GlStateManager.translate(- 0.75d,- (vehicle.getEyeHeight() + vehicle.getYOffset()), 0);
-
             GlStateManager.popMatrix();
         }
     }

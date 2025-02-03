@@ -1,22 +1,24 @@
 package com.hexagram202.subject3.common.recipe;
 
 import com.hexagram202.subject3.Subject3;
-import com.hexagram202.subject3.common.entities.EntityBedBoat;
 import com.hexagram202.subject3.common.item.ItemBedBoat;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBed;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import net.minecraft.util.NonNullList;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class DyeBedBoatRecipe extends ShapelessOreRecipe {
     public DyeBedBoatRecipe() {
-        super(new ResourceLocation("subject3", "dye_bed_boat_recipe"), new ItemStack(Subject3.ITEM_BED),
+        super(new ResourceLocation("subject3", "dye_bed_boat_recipe"), new ItemStack(Subject3.ITEM_BOAT),
             Ingredient.fromItem(Items.BED), Ingredient.fromItem(Items.DYE), Ingredient.fromItems(Items.BOAT, Items.ACACIA_BOAT, Items.BIRCH_BOAT, Items.DARK_OAK_BOAT, Items.JUNGLE_BOAT, Items.SPRUCE_BOAT));
     }
 
@@ -44,6 +46,6 @@ public class DyeBedBoatRecipe extends ShapelessOreRecipe {
         }
         if (type == null) type = EntityBoat.Type.OAK;
         if (color == null) color = EnumDyeColor.WHITE;
-        return new ItemStack(Subject3.ITEM_BED, 1, ItemBedBoat.makeData(type, color));
+        return new ItemStack(Subject3.ITEM_BOAT, 1, ItemBedBoat.makeData(type, color));
     }
 }

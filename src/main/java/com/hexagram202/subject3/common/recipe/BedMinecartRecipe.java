@@ -1,19 +1,20 @@
 package com.hexagram202.subject3.common.recipe;
 
 import com.hexagram202.subject3.Subject3;
-import com.hexagram202.subject3.common.item.ItemBedBoat;
 import com.hexagram202.subject3.common.item.ItemBedMinecart;
-import net.minecraft.entity.item.EntityBoat;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBed;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import net.minecraft.util.NonNullList;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class BedMinecartRecipe extends ShapelessOreRecipe {
     public BedMinecartRecipe() {
         super(new ResourceLocation("subject3", "bed_minecart_recipe"), new ItemStack(Subject3.ITEM_MINECART),
