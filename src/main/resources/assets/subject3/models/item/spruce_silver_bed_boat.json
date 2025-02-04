@@ -2,6 +2,6 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "subject3:item/silver_bed",
-    "layer1": "subject3:item/mangrove_bed_boat"
+    "layer1": "subject3:item/spruce_bed_boat"
   }
 }
