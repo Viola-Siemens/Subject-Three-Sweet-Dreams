@@ -39,7 +39,7 @@ jobs:
           - name: Setup Java
             uses: actions/setup-java@v4.2.1
             with:
-              java-version: '8'
+              java-version: ${{steps.gradle_properties.outputs.java_version}}
               distribution: 'zulu'
               cache: gradle
           - name: Build
