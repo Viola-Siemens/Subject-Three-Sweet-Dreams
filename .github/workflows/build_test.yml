@@ -30,8 +30,13 @@ jobs:
               key: ${{hashFiles('build.gradle') }}-${{hashFiles('gradle.properties') }}
               restore-keys: |
                 ${{hashFiles('build.gradle') }}-${{hashFiles('gradle.properties') }}
+          - name: Split branch name
+            env:
+              BRANCH: ${{ github.ref_name }}
+            id: split
+            run: echo "fragment=${BRANCH##*/}" >> $GITHUB_OUTPUT
           - name: Change mod version
-            run: sed -i "s/mod_version.*=.*/mod_version = ${{github.ref_name}}.${{github.run_number}}/g" gradle.properties
+            run: sed -i "s/mod_version.*=.*/mod_version = ${{steps.split.outputs.fragment}}.${{github.run_number}}/g" gradle.properties
           - name: Setup Java
             uses: actions/setup-java@v4.2.1
             with:
