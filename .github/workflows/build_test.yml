@@ -31,7 +31,7 @@ jobs:
               restore-keys: |
                 ${{hashFiles('build.gradle') }}-${{hashFiles('gradle.properties') }}
           - name: Change mod version
-            run: sed -i "s/mod_version.*=.*/mod_version = ${{github.ref_name}}.${{ github.run_number}}/g" gradle.properties
+            run: sed -i "s%mod_version.*=.*%mod_version = ${{github.ref_name}}.${{ github.run_number}}%g" gradle.properties
           - name: Setup Java
             uses: actions/setup-java@v4.2.1
             with:
