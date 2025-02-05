@@ -17,7 +17,6 @@ jobs:
             with:
                  file: gradle.properties
                  all: true
-
           - name: Grant Execute Permission for gradlew
             run: chmod +x gradlew
           - name: Cache Gradle
@@ -36,7 +35,7 @@ jobs:
             id: split
             run: echo "fragment=${BRANCH##*/}" >> $GITHUB_OUTPUT
           - name: Change mod version
-            run: sed -i "s/mod_version.*=.*/mod_version = ${{steps.split.outputs.fragment}}.${{github.run_number}}/g" gradle.properties
+            run: sed -i "s/mod_version.*=.*/mod_version = ${{steps.split.outputs.fragment}}.${{steps.gradle_properties.outputs.major_version}}.${{github.run_number}}/g" gradle.properties
           - name: Setup Java
             uses: actions/setup-java@v4.2.1
             with:
@@ -48,5 +47,5 @@ jobs:
           - name: Upload Build Artifacts
             uses: actions/upload-artifact@v4.3.3
             with:
-              name: subject3-snapshot-${{ github.run_number}}.jar
+              name: subject3-${{steps.split.outputs.fragment}}.${{steps.gradle_properties.outputs.major_version}}.${{github.run_number}}
               path: build/libs
