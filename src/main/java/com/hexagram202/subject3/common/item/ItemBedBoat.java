@@ -5,18 +5,15 @@ import com.hexagram202.subject3.common.utils.Pair;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
-import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -26,7 +23,7 @@ public class ItemBedBoat extends ItemBed{
 
     public static final int MAX = EnumDyeColor.values().length * EntityBoat.Type.values().length;
 
-    public static Pair<EntityBoat.Type, EnumDyeColor> getData(int damage){
+    public static Pair<EntityBoat.Type, EnumDyeColor> getData(int damage) {
         int color = damage % COLOR_COUNT;
         int type = (damage - color) / COLOR_COUNT;
         return Pair.of(EntityBoat.Type.byId(type), EnumDyeColor.byMetadata(color));

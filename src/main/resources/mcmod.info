@@ -1,7 +1,7 @@
 [{
 	"modid": "subject3",
 	"name": "Subject Three: Sweet Dreams",
-	"version": "1.0.0",
+	"version": "${mod_version}",
 	"mcversion": "1.12.2",
 	"description": "A meme mod related to a candidate for driving test subject three who performs funnily. \n \n With this mod, you can make bed boat and bed minecart to set a moving respawn point.",
 	"authorList": ["Hexagram", "Hileb"],

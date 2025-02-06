@@ -6,6 +6,10 @@ import com.hexagram202.subject3.common.capability.Subject3Capabilities;
 import com.hexagram202.subject3.common.item.ItemBed;
 import com.hexagram202.subject3.common.item.ItemBedMinecart;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderMinecart;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecartEmpty;
@@ -17,10 +21,14 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -114,6 +122,33 @@ public class EntityBedMinecart extends EntityMinecartEmpty implements IBedVehicl
             livingBase.limbSwing = 0;
             livingBase.limbSwingAmount = 0;
 
+        }
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        double d0 = this.lastTickPosX + (this.posX - this.lastTickPosX) * 0;
+        double d1 = this.lastTickPosY;
+        double d2 = this.lastTickPosZ;
+        Vec3d vec3d = this.getPos(d0, d1, d2);
+        if (vec3d != null) {
+            Vec3d vec3d1 = this.getPosOffset(d0, d1, d2, 0.3F);
+            Vec3d vec3d2 = this.getPosOffset(d0, d1, d2, -0.3F);
+            if (vec3d1 == null) {
+                vec3d1 = vec3d;
+            }
+
+            if (vec3d2 == null) {
+                vec3d2 = vec3d;
+            }
+
+
+            Vec3d vec3d3 = vec3d2.add(-vec3d1.x, -vec3d1.y, -vec3d1.z);
+            if (Double.compare(vec3d3.length(), 0D) != 0) {
+                vec3d3 = vec3d3.normalize();
+                this.rotationYaw = (float)( (Math.atan2(vec3d3.z, vec3d3.x) * (double)180.0F) / Math.PI) + 90f;
+            }
         }
     }
 
